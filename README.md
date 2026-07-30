@@ -77,6 +77,24 @@ Build a photorealistic multilingual avatar for bank marketing and promotion that
 
 ---
 
+### Demo 5 — Azure AI Foundry & Azure ML Platform Capabilities
+
+Showcase additional platform capabilities in **Azure AI Foundry** and **Azure ML** that are not covered by the bank scenario but are relevant to the MQ Critical Capabilities evaluation. This demo highlights the breadth of the platform independently of any single business use case.
+
+Topics may include (but are not limited to):
+
+- Azure ML model training, fine-tuning, and lifecycle management
+- Automated ML (AutoML) and hyperparameter tuning
+- Azure AI Foundry model catalog, model benchmarking, and model comparison
+- Prompt flow authoring, evaluation, and deployment
+- Responsible AI dashboard (fairness, interpretability, error analysis)
+- MLOps pipelines: CI/CD for models, dataset versioning, experiment tracking
+- Compute and infrastructure management (GPU clusters, serverless, managed endpoints)
+- Enterprise governance: RBAC, private networking, audit logging, content safety
+- Integration with Azure DevOps / GitHub Actions for end-to-end ML pipelines
+
+---
+
 ## Deliverables Per Demo
 
 For each demo, the following artifacts are provided:
@@ -96,7 +114,8 @@ For each demo, the following artifacts are provided:
 ├── demo1-deep-research-agent/
 ├── demo2-customer-ai-assistant/
 ├── demo3-bank-customer-agent/
-└── demo4-avatar-digital-human/
+├── demo4-avatar-digital-human/
+└── demo5-foundry-azureml-platform/
 ```
 
 ---

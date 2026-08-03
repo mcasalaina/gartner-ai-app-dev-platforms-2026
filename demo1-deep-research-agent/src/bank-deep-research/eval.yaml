@@ -1,0 +1,12 @@
+name: bank-deep-research-regression
+agent:
+    name: bank-deep-research
+    version: "5"
+dataset:
+    local_uri: ../../evals/research-quality.jsonl
+evaluators:
+    - name: bank-deep-research-cli-check
+      version: "1"
+      local_uri: evaluators/bank-deep-research-cli-check/rubric_dimensions.json
+options:
+    eval_model: gpt-5.4-mini

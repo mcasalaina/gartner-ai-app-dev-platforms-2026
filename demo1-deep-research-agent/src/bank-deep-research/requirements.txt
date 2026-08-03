@@ -1,0 +1,7 @@
+agent-framework-foundry
+agent-framework-foundry-hosting>=1.0.0a260630
+azure-monitor-opentelemetry>=1.8.1
+pydantic>=2.11.0
+
+# debugpy enables local debugging of this agent with the Foundry Toolkit VS Code extension.
+debugpy

@@ -1,0 +1,14 @@
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+Pillow==11.3.0
+pydantic-settings==2.10.1
+python-multipart==0.0.20
+httpx==0.28.1
+aiofiles==24.1.0
+azure-identity==1.24.0
+azure-monitor-opentelemetry==1.8.1
+openai==1.99.6
+pypdf==5.9.0
+reportlab==4.4.3
+pytest==8.4.1
+pytest-asyncio==1.1.0

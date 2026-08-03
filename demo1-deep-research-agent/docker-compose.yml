@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      FOUNDRY_AGENT_ENDPOINT: ${FOUNDRY_AGENT_ENDPOINT:-}
+      FOUNDRY_AGENT_API_VERSION: ${FOUNDRY_AGENT_API_VERSION:-v1}
+      IMAGE_MODEL_ENDPOINT: ${IMAGE_MODEL_ENDPOINT:-}
+      IMAGE_MODEL_DEPLOYMENT: ${IMAGE_MODEL_DEPLOYMENT:-flux-1-1-pro}
+      SPEECH_REGION: ${SPEECH_REGION:-}
+      SPEECH_ENDPOINT: ${SPEECH_ENDPOINT:-}
+      SPEECH_RESOURCE_ID: ${SPEECH_RESOURCE_ID:-}
+      SPEECH_VOICE: ${SPEECH_VOICE:-en-US-AvaMultilingualNeural}
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID:-}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID:-}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET:-}
+    volumes:
+      - research-data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  research-data:

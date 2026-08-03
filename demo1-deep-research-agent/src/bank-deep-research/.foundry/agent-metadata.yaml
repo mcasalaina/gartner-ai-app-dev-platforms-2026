@@ -1,0 +1,8 @@
+schemaVersion: 1
+defaultEnvironment: dev
+environments:
+  dev:
+    azd:
+      environmentName: gartner-bank-research-6b7323
+      service: bank-deep-research
+    evaluationSuites: []

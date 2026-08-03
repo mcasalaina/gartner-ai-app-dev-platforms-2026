@@ -1,0 +1,3 @@
+{"query":"Develop a market entry strategy for a new investment bank near TXSE serving US, European, and Chinese customers.","expectations":{"required_sections":["market opportunity","regulation","operating model","risk controls","service portfolio"],"citations_required":true}}
+{"query":"Compare the regulatory and exchange implications of serving customers across the US, EU, and China.","expectations":{"required_sources":["official regulator","official exchange"],"citations_required":true}}
+{"query":"Recommend a prioritized portfolio of retail and commercial banking services with evidence.","expectations":{"required_sections":["service portfolio","prioritization rationale"],"citations_required":true}}

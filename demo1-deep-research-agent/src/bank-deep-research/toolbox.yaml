@@ -1,0 +1,7 @@
+description: Microsoft Web IQ grounding for Gartner bank research
+tools:
+  - type: mcp
+    server_label: webiq
+    server_url: https://api.microsoft.ai/v3/mcp
+    project_connection_id: webiq
+    require_approval: never

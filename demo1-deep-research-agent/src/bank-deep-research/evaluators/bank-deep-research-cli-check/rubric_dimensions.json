@@ -1,0 +1,43 @@
+[
+  {
+    "id": "source_grounded_factual_accuracy",
+    "description": "The response states banking facts, terms, and conclusions that are supported by the available sources and avoids unsupported or incorrect claims.",
+    "weight": 10
+  },
+  {
+    "id": "scope_and_entity_disambiguation",
+    "description": "The response correctly identifies the relevant bank, subsidiary, product, region, and time frame, and does not conflate similar entities or generalize narrow evidence beyond its scope.",
+    "weight": 5
+  },
+  {
+    "id": "requested_research_coverage",
+    "description": "The response addresses the user’s requested research question and includes the key decision-relevant facts, qualifiers, and comparison points that the prompt calls for.",
+    "weight": 4
+  },
+  {
+    "id": "conflict_resolution_and_evidence_synthesis",
+    "description": "When sources disagree or provide partial coverage, the response reconciles the evidence appropriately, surfaces contradictions, and synthesizes multiple relevant facts into a coherent result.",
+    "weight": 5
+  },
+  {
+    "id": "uncertainty_and_caveat_handling",
+    "description": "The response clearly distinguishes confirmed facts from assumptions or missing information, uses appropriate caveats for incomplete or time-sensitive data, and avoids overstating certainty.",
+    "weight": 4
+  },
+  {
+    "id": "qualifier_and_condition_preservation",
+    "description": "The response preserves important numeric, eligibility, geographic, product-tier, and date qualifiers such as fees, rates, limits, and policy conditions without dropping or distorting them.",
+    "weight": 4
+  },
+  {
+    "id": "user_intent_alignment",
+    "description": "The response stays focused on the user’s research objective and prioritizes the most decision-relevant information without drifting into irrelevant banking details.",
+    "weight": 3
+  },
+  {
+    "id": "general_quality",
+    "description": "Other important quality factors not covered by listed criteria.",
+    "weight": 5,
+    "always_applicable": true
+  }
+]

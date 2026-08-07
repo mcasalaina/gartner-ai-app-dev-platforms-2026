@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": "${AZURE_LOCATION}" },
+    "environmentName": { "value": "${AZURE_ENV_NAME}" },
+    "containerRegistryResourceId": { "value": "${AZURE_CONTAINER_REGISTRY_ID}" },
+    "containerRegistryServer": { "value": "${AZURE_CONTAINER_REGISTRY_ENDPOINT}" },
+    "frontendImage": { "value": "${SERVICE_FRONTEND_IMAGE}" },
+    "backendImage": { "value": "${SERVICE_BACKEND_IMAGE}" },
+    "bridgeImage": { "value": "${SERVICE_BRIDGE_IMAGE}" },
+    "bridgeSidecarImage": { "value": "${SERVICE_ENTRA_SIDECAR_IMAGE}" },
+    "webApiClientId": { "value": "${WEB_ENTRA_CLIENT_ID}" },
+    "webApiAudience": { "value": "${WEB_ENTRA_API_AUDIENCE}" },
+    "webApiRequiredScope": { "value": "${WEB_ENTRA_REQUIRED_SCOPE}" },
+    "webApiClientSecret": { "value": "${WEB_ENTRA_CLIENT_SECRET}" },
+    "agentUserAudience": { "value": "${AGENT_USER_AUDIENCE}" },
+    "agentUserId": { "value": "${AGENT_USER_ID}" },
+    "agentIdentityId": { "value": "${AGENT_IDENTITY_ID}" },
+    "parentBlueprintId": { "value": "${PARENT_BLUEPRINT_ID}" },
+    "parentBlueprintClientSecret": { "value": "${PARENT_BLUEPRINT_CLIENT_SECRET}" }
+  }
+}

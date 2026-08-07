@@ -1,0 +1,23 @@
+{
+  "passed": false,
+  "hard_failure": true,
+  "timestamp": "2026-08-05T04:43:35.748932+00:00",
+  "run_id": "20260805T044300Z",
+  "agent_name": "bank-servicing-agent",
+  "agent_version": "7",
+  "azure_job_execution": "bank-servicing-assert-aaizrhw",
+  "evaluation_identity": "Agent ID user via loopback Entra auth sidecar",
+  "query": "Using Fabric IQ, Foundry IQ, and Work IQ, compare Checking 360 and Savings Builder for me. Include current account or portfolio context, the approved product policy, and any recent bank-related email or meeting follow-up. Cite each source.",
+  "required_sources": [
+    "Fabric IQ",
+    "Foundry IQ",
+    "Work IQ"
+  ],
+  "returned_sources": [],
+  "source_line": null,
+  "response_sha256": "d6ad6c47a60c944c5cc0eb2b125dbe70c5582de5e2d7ee9bf087e90f7ebc338c",
+  "failures": [
+    "Required tools returned no data: Fabric IQ, Foundry IQ, Work IQ",
+    "Expected exactly one Sources used line; found 0"
+  ]
+}

@@ -1,0 +1,702 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acmebank.example/schemas/demo1-service-corpus.schema.json",
+  "title": "Demo 1 service corpus manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "corpus_id",
+    "source_contract",
+    "record_version",
+    "etag",
+    "review",
+    "publication",
+    "source_artifacts",
+    "citations",
+    "extracted_text",
+    "image_metadata",
+    "generated_flux_media",
+    "feedback_lineage",
+    "synthetic_account_opening_drafts",
+    "service_description_versions"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "corpus_id": {
+      "type": "string"
+    },
+    "record_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "etag": {
+      "type": "string"
+    },
+    "source_contract": {
+      "$ref": "#/$defs/sourceContract"
+    },
+    "review": {
+      "$ref": "#/$defs/reviewState"
+    },
+    "publication": {
+      "$ref": "#/$defs/publicationState"
+    },
+    "source_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/sourceArtifact"
+      }
+    },
+    "citations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/citation"
+      }
+    },
+    "extracted_text": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/extractedText"
+      }
+    },
+    "image_metadata": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/imageMetadata"
+      }
+    },
+    "generated_flux_media": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/generatedFluxMedia"
+      }
+    },
+    "feedback_lineage": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/feedbackLineage"
+      }
+    },
+    "synthetic_account_opening_drafts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/accountOpeningDraft"
+      }
+    },
+    "service_description_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/serviceDescriptionVersion"
+      }
+    }
+  },
+  "$defs": {
+    "sourceContract": {
+      "type": "object",
+      "required": [
+        "contract_id",
+        "source_document_path",
+        "source_document_sha256",
+        "source_document_page_count",
+        "separate_from_policy_connection",
+        "forbidden_publish_connections",
+        "project_endpoint"
+      ],
+      "properties": {
+        "contract_id": {
+          "type": "string"
+        },
+        "source_document_path": {
+          "type": "string"
+        },
+        "source_document_sha256": {
+          "type": "string"
+        },
+        "source_document_page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "separate_from_policy_connection": {
+          "type": "boolean"
+        },
+        "forbidden_publish_connections": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "project_endpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "reviewState": {
+      "type": "object",
+      "required": [
+        "state",
+        "updated_at",
+        "updated_by",
+        "history",
+        "qc_summary"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "draft",
+            "qc_failed",
+            "pending_review",
+            "approved",
+            "rejected",
+            "published"
+          ]
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "updated_by": {
+          "type": "string"
+        },
+        "history": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/reviewHistoryEntry"
+          }
+        },
+        "qc_summary": {
+          "$ref": "#/$defs/qcSummary"
+        }
+      }
+    },
+    "reviewHistoryEntry": {
+      "type": "object",
+      "required": [
+        "to_state",
+        "timestamp",
+        "actor",
+        "note"
+      ],
+      "properties": {
+        "from_state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "to_state": {
+          "enum": [
+            "draft",
+            "qc_failed",
+            "pending_review",
+            "approved",
+            "rejected",
+            "published"
+          ]
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "qcSummary": {
+      "type": "object",
+      "required": [
+        "status",
+        "checks"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "failed",
+            "passed"
+          ]
+        },
+        "checks": {
+          "type": "object",
+          "required": [
+            "citations_complete",
+            "image_provenance_complete",
+            "version_hashes_verified",
+            "feedback_links_verified"
+          ],
+          "properties": {
+            "citations_complete": {
+              "type": "boolean"
+            },
+            "image_provenance_complete": {
+              "type": "boolean"
+            },
+            "version_hashes_verified": {
+              "type": "boolean"
+            },
+            "feedback_links_verified": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "publicationState": {
+      "type": "object",
+      "required": [
+        "blob_container",
+        "blob_prefix",
+        "foundry_iq_connection_name",
+        "publish_state"
+      ],
+      "properties": {
+        "blob_container": {
+          "type": "string"
+        },
+        "blob_prefix": {
+          "type": "string"
+        },
+        "foundry_iq_connection_name": {
+          "type": "string"
+        },
+        "publish_state": {
+          "enum": [
+            "not_started",
+            "planned",
+            "published"
+          ]
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "sourceArtifact": {
+      "type": "object",
+      "required": [
+        "artifact_id",
+        "relative_path",
+        "kind",
+        "mime_type",
+        "sha256",
+        "size_bytes",
+        "provenance"
+      ],
+      "properties": {
+        "artifact_id": {
+          "type": "string"
+        },
+        "relative_path": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "document",
+            "image",
+            "audio"
+          ]
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "origin",
+        "generator",
+        "license"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        }
+      }
+    },
+    "citation": {
+      "type": "object",
+      "required": [
+        "citation_id",
+        "artifact_id",
+        "locator",
+        "quote"
+      ],
+      "properties": {
+        "citation_id": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "locator": {
+          "type": "object"
+        },
+        "quote": {
+          "type": "string"
+        }
+      }
+    },
+    "extractedText": {
+      "type": "object",
+      "required": [
+        "chunk_id",
+        "artifact_id",
+        "page",
+        "section_title",
+        "text",
+        "citations"
+      ],
+      "properties": {
+        "chunk_id": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "section_title": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "citations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "imageMetadata": {
+      "type": "object",
+      "required": [
+        "image_id",
+        "artifact_id",
+        "caption",
+        "provenance",
+        "citations"
+      ],
+      "properties": {
+        "image_id": {
+          "type": "string"
+        },
+        "artifact_id": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "source_type",
+            "created_by",
+            "prompt_hash",
+            "reviewed_by",
+            "reviewed_at"
+          ],
+          "properties": {
+            "source_type": {
+              "type": "string"
+            },
+            "created_by": {
+              "type": "string"
+            },
+            "prompt_hash": {
+              "type": "string"
+            },
+            "reviewed_by": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reviewed_at": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "citations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "generatedFluxMedia": {
+      "type": "object",
+      "required": [
+        "media_id",
+        "storage_path",
+        "media_type",
+        "prompt_hash",
+        "model_deployment",
+        "derived_from_version_id",
+        "citations",
+        "provenance"
+      ],
+      "properties": {
+        "media_id": {
+          "type": "string"
+        },
+        "storage_path": {
+          "type": "string"
+        },
+        "media_type": {
+          "type": "string"
+        },
+        "prompt_hash": {
+          "type": "string"
+        },
+        "model_deployment": {
+          "type": "string"
+        },
+        "derived_from_version_id": {
+          "type": "string"
+        },
+        "citations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": [
+            "source",
+            "reviewed_by",
+            "approval_timestamp"
+          ],
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "reviewed_by": {
+              "type": "string"
+            },
+            "approval_timestamp": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "feedbackLineage": {
+      "type": "object",
+      "required": [
+        "feedback_id",
+        "source_version_id",
+        "derived_version_id",
+        "submitted_by_role",
+        "submitted_at",
+        "summary"
+      ],
+      "properties": {
+        "feedback_id": {
+          "type": "string"
+        },
+        "source_version_id": {
+          "type": "string"
+        },
+        "derived_version_id": {
+          "type": "string"
+        },
+        "submitted_by_role": {
+          "type": "string"
+        },
+        "submitted_at": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        }
+      }
+    },
+    "accountOpeningDraft": {
+      "type": "object",
+      "required": [
+        "draft_id",
+        "applicant_alias",
+        "product_name",
+        "service_version_id",
+        "status",
+        "citations",
+        "kyc_notes"
+      ],
+      "properties": {
+        "draft_id": {
+          "type": "string"
+        },
+        "applicant_alias": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "service_version_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "reviewed",
+            "rejected"
+          ]
+        },
+        "citations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "kyc_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceDescriptionVersion": {
+      "type": "object",
+      "required": [
+        "version_id",
+        "sequence",
+        "immutable",
+        "created_at",
+        "title",
+        "summary",
+        "services",
+        "citations",
+        "derived_from_feedback",
+        "content_hash"
+      ],
+      "properties": {
+        "version_id": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "immutable": {
+          "type": "boolean",
+          "const": true
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "services": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "service_id",
+              "name",
+              "category",
+              "channel_focus"
+            ],
+            "properties": {
+              "service_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "channel_focus": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "citations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "derived_from_feedback": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "content_hash": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

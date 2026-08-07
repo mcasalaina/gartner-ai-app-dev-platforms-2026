@@ -1,0 +1,8 @@
+{
+  "name": "bank-servicing-multi-source-intro",
+  "version": "1.0.0",
+  "local_uri": "../../evaluation/foundry/datasets/multi_source_intro_cases.jsonl",
+  "case_count": 1,
+  "suite_id": "multi-source-intro",
+  "non_production_data_only": true
+}

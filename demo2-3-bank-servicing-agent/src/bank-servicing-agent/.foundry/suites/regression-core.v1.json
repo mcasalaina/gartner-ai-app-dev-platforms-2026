@@ -1,0 +1,43 @@
+{
+  "id": "regression-core",
+  "version": "1.0.0",
+  "preview": {
+    "rubric_evaluator": "Preview: Foundry rubric evaluator. Validate locally before any remote registration.",
+    "agent_optimizer": "Preview: Foundry Agent Optimizer. Synthetic read-only only; candidate apply remains manual."
+  },
+  "dataset": "../../evaluation/foundry/datasets/regression_cases.jsonl",
+  "min_aggregate": 0.91,
+  "regression_floor": 0.89,
+  "regression_tolerance": 0.01,
+  "hard_gate_dimensions": [
+    "authorized_customer_and_service_scope",
+    "bsa_aml_cip_and_ofac_controls",
+    "regulation_e_error_resolution",
+    "deposit_disclosures_funds_availability_and_fdic",
+    "privacy_glba_regulation_p",
+    "fair_treatment_fcra_and_udaap",
+    "servicing_authority_and_human_approval",
+    "source_routing_and_evidence_provenance",
+    "security_and_instruction_integrity"
+  ],
+  "evaluator_bindings": {
+    "built_in": [
+      "relevance",
+      "task_adherence",
+      "intent_resolution",
+      "indirect_attack",
+      "builtin.tool_call_accuracy"
+    ],
+    "custom_rubric": {
+      "name": "bank_servicing_rubric",
+      "version": "2.0.0",
+      "local_uri": "evaluation/foundry/evaluators/bank_servicing_rubric.v2.json",
+      "preview": true
+    }
+  },
+  "tags": {
+    "tier": "regression",
+    "purpose": "quality",
+    "stage": "local"
+  }
+}

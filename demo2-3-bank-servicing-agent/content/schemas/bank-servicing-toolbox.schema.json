@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acmebank.example/schemas/bank-servicing-toolbox.schema.json",
+  "title": "Bank servicing toolbox manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "toolbox",
+    "identity_contract",
+    "tools"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "toolbox": {
+      "type": "object",
+      "required": [
+        "name",
+        "release_tag",
+        "project_endpoint",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "release_tag": {
+          "type": "string"
+        },
+        "project_endpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default_endpoint": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "identity_contract": {
+      "type": "object",
+      "required": [
+        "user_identity_tools",
+        "service_identity_tools"
+      ],
+      "properties": {
+        "user_identity_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "service_identity_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

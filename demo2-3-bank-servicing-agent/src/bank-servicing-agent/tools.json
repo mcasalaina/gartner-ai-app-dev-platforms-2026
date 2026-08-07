@@ -1,0 +1,72 @@
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup_bank_service_catalog",
+        "description": "Retrieve grounded details about bank services, account types, cards, loans, investments, branches, and service features.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "service_query": {
+              "type": "string",
+              "description": "The banking service, product, or branch topic to look up."
+            }
+          },
+          "required": ["service_query"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup_service_policy",
+        "description": "Retrieve grounded policy or procedural guidance for bank servicing answers that must be cited.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "policy_topic": {
+              "type": "string",
+              "description": "The service or servicing policy topic to retrieve."
+            }
+          },
+          "required": ["policy_topic"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup_customer_servicing_context",
+        "description": "Retrieve synthetic account-opening, servicing, or KYC context for a current customer-servicing request.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "customer_request": {
+              "type": "string",
+              "description": "The servicing need or workflow state to look up."
+            }
+          },
+          "required": ["customer_request"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lookup_synthetic_kyc_requirements",
+        "description": "Retrieve synthetic KYC and account-opening requirement guidance for a demo workflow.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workflow_topic": {
+              "type": "string",
+              "description": "The synthetic KYC or account-opening scenario to ground."
+            }
+          },
+          "required": ["workflow_topic"]
+        }
+      }
+    }
+  ]
+}

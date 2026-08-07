@@ -1,0 +1,52 @@
+[2026-08-04T21:09:37-07:00] Authentication: AzureDeveloperCLICredential.GetToken() acquired a token for scope "https://ai.azure.com/.default"
+[2026-08-04T21:09:37-07:00] Authentication: AzureDeveloperCLICredential.GetToken() acquired a token for scope "https://ai.azure.com/.default"
+[2026-08-04T21:09:37-07:00] Retry: =====> Try=1 for POST https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project/agents/bank-servicing-agent/endpoint/sessions?api-version=v1
+[2026-08-04T21:09:37-07:00] Request: ==> OUTGOING REQUEST (Try=1)
+   POST https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project/agents/bank-servicing-agent/endpoint/sessions?api-version=v1
+   Authorization: REDACTED
+   Content-Length: 64
+   Content-Type: application/json
+   User-Agent: azsdk-go-azure-ai-agents/v1.0.0 (go1.26.4-X:loopvar; darwin),azd-ext-azure-ai-agents/1.0.0-beta.6
+   X-Ms-Correlation-Request-Id: 2551f79f9fe583ea3e6fc72d496f41e9
+   --------------------------------------------------------------------------------
+{"version_indicator":{"type":"version_ref","agent_version":"6"}}
+   --------------------------------------------------------------------------------
+
+[2026-08-04T21:09:44-07:00] Response: ==> REQUEST/RESPONSE (Try=1/6.904567459s, OpTime=6.904611584s) -- RESPONSE RECEIVED
+   POST https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project/agents/bank-servicing-agent/endpoint/sessions?api-version=v1
+   Authorization: REDACTED
+   Content-Length: 64
+   Content-Type: application/json
+   User-Agent: azsdk-go-azure-ai-agents/v1.0.0 (go1.26.4-X:loopvar; darwin),azd-ext-azure-ai-agents/1.0.0-beta.6
+   X-Ms-Correlation-Request-Id: 2551f79f9fe583ea3e6fc72d496f41e9
+   --------------------------------------------------------------------------------
+   RESPONSE Status: 201 Created
+   Access-Control-Expose-Headers: REDACTED
+   Api-Supported-Versions: REDACTED
+   Apim-Request-Id: REDACTED
+   Azureml-Served-By-Cluster: REDACTED
+   Content-Type: application/json; charset=utf-8
+   Date: Wed, 05 Aug 2026 04:09:43 GMT
+   Request-Context: REDACTED
+   Strict-Transport-Security: REDACTED
+   Vary: REDACTED
+   X-Content-Type-Options: REDACTED
+   X-Ms-Region: REDACTED
+   X-Ms-Response-Type: REDACTED
+   X-Request-Id: 4f60f69ce4d7b9e68a6dda27a03a4673
+   --------------------------------------------------------------------------------
+{
+  "agent_session_id": "2622718b2534d7fa00PssnazYC2tlB6zwJaJYqffeUUC1WnTw1",
+  "version_indicator": {
+    "type": "version_ref",
+    "agent_version": "6"
+  },
+  "status": "active",
+  "created_at": 1785902979,
+  "last_accessed_at": 1785902979,
+  "expires_at": 1788494979
+}
+   --------------------------------------------------------------------------------
+
+[2026-08-04T21:09:44-07:00] Retry: response 201
+[2026-08-04T21:09:44-07:00] Retry: exit due to non-retriable status code

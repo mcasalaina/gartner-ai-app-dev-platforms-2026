@@ -1,0 +1,28 @@
+# Preview: Foundry custom rubric evaluator for bank servicing.
+# Preview: Foundry Agent Optimizer. Use synthetic, read-only runs only; candidate apply remains manual.
+name: bank-servicing-agent-optimizer
+agent:
+  name: bank-servicing-agent
+  kind: hosted
+  model: gpt-5.4-mini
+  config: .agent_configs/baseline/metadata.yaml
+dataset:
+  local_uri: ../../evaluation/foundry/datasets/regression_cases.jsonl
+evaluators:
+  - name: bank_servicing_rubric
+    version: "4"
+    local_uri: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+  - relevance
+  - task_adherence
+  - intent_resolution
+  - indirect_attack
+  - builtin.tool_call_accuracy
+options:
+  eval_model: gpt-5.4-mini
+  optimization_model: DeepSeek-V4-Pro-optimizer
+  max_candidates: 4
+  optimization_config:
+    model_search_space:
+      - gpt-5.4-mini
+      - gpt-5-mini
+      - gpt-4.1-mini

@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "response": "## Request Assessment\nI can only confirm one configured Work IQ surface authenticated from the available runtime signal: copilot is available via the signed-in Microsoft Copilot agent [W1]. The requested compact JSON status is: `{\"copilot\":true,\"mail\":false,\"teams\":false}` [W1].\n\n## Safety Checks\nNo Microsoft 365 content was retrieved, quoted, summarized, or searched [W1]. This was limited to access/authentication status for the configured Work IQ surface only [W1].\n\n## Recommended Next Step\nIf you want a synthetic bank-servicing workflow next, I can help with a grounded account-opening, fee-dispute, or KYC next-step check without claiming completion [W1].\n\nSources used: Work IQ",
+  "timestamp": "2026-08-05T04:14:23.764060+00:00"
+}

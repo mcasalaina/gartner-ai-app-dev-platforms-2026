@@ -1,0 +1,8 @@
+{
+  "complete": false,
+  "correlated_turns": 0,
+  "expected_turns": 8,
+  "missing": [
+    "Trace import and judging were not reached because ASSERT stopped before all 12 reviewed inference cases completed."
+  ]
+}

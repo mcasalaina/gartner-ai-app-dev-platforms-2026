@@ -1,0 +1,28 @@
+{
+  "started_at": "2026-08-05T05:54:54.947897+00:00",
+  "status": "completed",
+  "ended_at": "2026-08-05T06:38:20.461288+00:00",
+  "stages": {
+    "inference": "completed",
+    "judge": "completed"
+  },
+  "pid": 35,
+  "host": "bank-servicing-assert-pt0h09x-mzglp",
+  "heartbeat_at": "2026-08-05T06:38:20.461288+00:00",
+  "stage_timings": {
+    "inference": {
+      "started_at": "2026-08-05T05:54:55.712612+00:00",
+      "ended_at": "2026-08-05T06:02:22.793447+00:00",
+      "duration_secs": 446.59
+    },
+    "judge": {
+      "started_at": "2026-08-05T06:02:23.357532+00:00",
+      "ended_at": "2026-08-05T06:03:55.592597+00:00",
+      "duration_secs": 91.74
+    }
+  },
+  "judge_recovery": {
+    "completed_at": "2026-08-05T06:38:20.461288+00:00",
+    "retry_attempts": 0
+  }
+}

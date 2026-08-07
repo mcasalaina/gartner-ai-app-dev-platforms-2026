@@ -1,0 +1,352 @@
+{
+  "$schema": "../schemas/demo1-service-corpus.schema.json",
+  "schema_version": "1.0.0",
+  "corpus_id": "demo1-bank-service-corpus",
+  "source_contract": {
+    "contract_id": "demo1-service-corpus-contract",
+    "source_document_path": "demo1-deep-research-agent/examples/generated-bank-strategy/bank-strategy-report.pdf",
+    "source_document_sha256": "02d03b56361b8eed4ae6fa0ee594f46a0b6096e9e82bb5073a73bd218e133ad3",
+    "source_document_page_count": 5,
+    "separate_from_policy_connection": true,
+    "forbidden_publish_connections": [
+      "kb-acme-bank-foundryiq"
+    ],
+    "project_endpoint": "https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project",
+    "notes": "Separate reviewed-content corpus for Demo 1 service discovery assets. Never overwrite the bank policy knowledge base."
+  },
+  "record_version": 1,
+  "review": {
+    "state": "draft",
+    "updated_at": "2026-08-04T13:45:00Z",
+    "updated_by": "content.seed.generator",
+    "history": [
+      {
+        "from_state": null,
+        "to_state": "draft",
+        "timestamp": "2026-08-04T13:45:00Z",
+        "actor": "content.seed.generator",
+        "note": "Initial synthetic staging manifest created from Demo 1 outputs."
+      }
+    ],
+    "qc_summary": {
+      "status": "pending",
+      "checks": {
+        "citations_complete": false,
+        "image_provenance_complete": false,
+        "version_hashes_verified": false,
+        "feedback_links_verified": false
+      }
+    }
+  },
+  "publication": {
+    "blob_container": "bank-servicing-content",
+    "blob_prefix": "demo1-service-corpus/2026-08-04.1",
+    "foundry_iq_connection_name": "svc-demo1-bank-services-foundryiq",
+    "publish_state": "not_started",
+    "published_at": null
+  },
+  "source_artifacts": [
+    {
+      "artifact_id": "src-pdf-bank-strategy",
+      "relative_path": "demo1-deep-research-agent/examples/generated-bank-strategy/bank-strategy-report.pdf",
+      "kind": "document",
+      "mime_type": "application/pdf",
+      "sha256": "02d03b56361b8eed4ae6fa0ee594f46a0b6096e9e82bb5073a73bd218e133ad3",
+      "size_bytes": 11386,
+      "page_count": 5,
+      "provenance": {
+        "origin": "demo1-generated-asset",
+        "generator": "deep-research-agent",
+        "license": "synthetic-internal-demo"
+      }
+    },
+    {
+      "artifact_id": "src-image-hero",
+      "relative_path": "demo1-deep-research-agent/examples/generated-bank-strategy/bank-hero.png",
+      "kind": "image",
+      "mime_type": "image/png",
+      "sha256": "86b67df4b32f845854bd39c0784092759d219e59dc18f0e5fdda60dbcdbc4f8f",
+      "size_bytes": 2141932,
+      "width": 1440,
+      "height": 960,
+      "provenance": {
+        "origin": "demo1-generated-asset",
+        "generator": "deep-research-agent",
+        "license": "synthetic-internal-demo"
+      }
+    },
+    {
+      "artifact_id": "src-image-priorities",
+      "relative_path": "demo1-deep-research-agent/examples/generated-bank-strategy/service-priorities.svg",
+      "kind": "image",
+      "mime_type": "image/svg+xml",
+      "sha256": "4cad29ba7c7e8d32191df8c0c6db99fa83919604806502c0d0329bea7d2480ef",
+      "size_bytes": 1394,
+      "provenance": {
+        "origin": "demo1-generated-asset",
+        "generator": "deep-research-agent",
+        "license": "synthetic-internal-demo"
+      }
+    },
+    {
+      "artifact_id": "src-audio-narration",
+      "relative_path": "demo1-deep-research-agent/examples/generated-bank-strategy/services-narration.wav",
+      "kind": "audio",
+      "mime_type": "audio/wav",
+      "sha256": "80144a3ca3a04c33a5524c04e41fb37fc83ef581068c2ee82e13a48b00566346",
+      "size_bytes": 5347844,
+      "duration_seconds": 33.4,
+      "provenance": {
+        "origin": "demo1-generated-asset",
+        "generator": "deep-research-agent",
+        "license": "synthetic-internal-demo"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "citation_id": "citation-p1-portfolio",
+      "artifact_id": "src-pdf-bank-strategy",
+      "locator": {
+        "page": 1,
+        "line_range": [
+          1,
+          12
+        ]
+      },
+      "quote": "Synthetic executive summary describing a customer-first banking service portfolio."
+    },
+    {
+      "citation_id": "citation-p2-services",
+      "artifact_id": "src-pdf-bank-strategy",
+      "locator": {
+        "page": 2,
+        "line_range": [
+          1,
+          18
+        ]
+      },
+      "quote": "Synthetic service matrix covering checking, savings, lending, and advisory offers."
+    },
+    {
+      "citation_id": "citation-p3-journeys",
+      "artifact_id": "src-pdf-bank-strategy",
+      "locator": {
+        "page": 3,
+        "line_range": [
+          4,
+          22
+        ]
+      },
+      "quote": "Synthetic customer journey guidance for branch, mobile, and advisor-assisted servicing."
+    },
+    {
+      "citation_id": "citation-hero-image",
+      "artifact_id": "src-image-hero",
+      "locator": {
+        "region": "full-image"
+      },
+      "quote": "Synthetic bank lobby hero image used for reviewed service merchandising."
+    },
+    {
+      "citation_id": "citation-priority-diagram",
+      "artifact_id": "src-image-priorities",
+      "locator": {
+        "region": "full-image"
+      },
+      "quote": "Synthetic service priority diagram for top discovery scenarios."
+    }
+  ],
+  "extracted_text": [
+    {
+      "chunk_id": "chunk-exec-summary",
+      "artifact_id": "src-pdf-bank-strategy",
+      "page": 1,
+      "section_title": "Executive Summary",
+      "text": "ACME Bank packages everyday banking, advisory, and lending support into service cards designed for omnichannel discovery.",
+      "citations": [
+        "citation-p1-portfolio"
+      ]
+    },
+    {
+      "chunk_id": "chunk-service-bundles",
+      "artifact_id": "src-pdf-bank-strategy",
+      "page": 2,
+      "section_title": "Service Bundles",
+      "text": "The reviewed service catalog highlights Checking 360, Savings Builder, Refinance Assist, and Wealth Insights as the primary experiences surfaced to customers.",
+      "citations": [
+        "citation-p2-services"
+      ]
+    },
+    {
+      "chunk_id": "chunk-channel-journeys",
+      "artifact_id": "src-pdf-bank-strategy",
+      "page": 3,
+      "section_title": "Customer Journeys",
+      "text": "Service descriptions align mobile self-service, branch escalation, and advisor follow-up into one handoff-aware servicing journey.",
+      "citations": [
+        "citation-p3-journeys"
+      ]
+    }
+  ],
+  "image_metadata": [
+    {
+      "image_id": "img-source-hero",
+      "artifact_id": "src-image-hero",
+      "caption": "Synthetic retail banking hero art for service discovery.",
+      "provenance": {
+        "source_type": "demo1-generated-asset",
+        "created_by": "deep-research-agent",
+        "prompt_hash": "sha256:hero-source-asset",
+        "reviewed_by": null,
+        "reviewed_at": null
+      },
+      "citations": [
+        "citation-hero-image"
+      ]
+    },
+    {
+      "image_id": "img-source-priorities",
+      "artifact_id": "src-image-priorities",
+      "caption": "Synthetic vector diagram of service priorities.",
+      "provenance": {
+        "source_type": "demo1-generated-asset",
+        "created_by": "deep-research-agent",
+        "prompt_hash": "sha256:priority-source-asset",
+        "reviewed_by": null,
+        "reviewed_at": null
+      },
+      "citations": [
+        "citation-priority-diagram"
+      ]
+    }
+  ],
+  "generated_flux_media": [
+    {
+      "media_id": "flux-checking-visual-v1",
+      "storage_path": "generated/flux/checking-360-v1.png",
+      "media_type": "image/png",
+      "prompt_hash": "sha256:flux-checking-360-v1",
+      "model_deployment": "flux-1.1-pro",
+      "derived_from_version_id": "svc-desc-2026-08-04-v2",
+      "citations": [
+        "citation-p2-services",
+        "citation-hero-image"
+      ],
+      "provenance": {
+        "source": "synthetic-flux-output",
+        "reviewed_by": "content.editor@example.com",
+        "approval_timestamp": "2026-08-04T14:10:00Z"
+      }
+    }
+  ],
+  "feedback_lineage": [
+    {
+      "feedback_id": "feedback-v1-tone",
+      "source_version_id": "svc-desc-2026-07-31-v1",
+      "derived_version_id": "svc-desc-2026-08-04-v2",
+      "submitted_by_role": "content_reviewer",
+      "submitted_at": "2026-08-04T12:15:00Z",
+      "summary": "Simplify product phrasing and tighten channel-specific callouts."
+    }
+  ],
+  "synthetic_account_opening_drafts": [
+    {
+      "draft_id": "acct-open-draft-001",
+      "applicant_alias": "Taylor Rivera",
+      "product_name": "Checking 360",
+      "service_version_id": "svc-desc-2026-08-04-v2",
+      "status": "draft",
+      "citations": [
+        "citation-p2-services",
+        "citation-p3-journeys"
+      ],
+      "kyc_notes": "Synthetic applicant journey for branch-assisted onboarding with digital document upload."
+    },
+    {
+      "draft_id": "acct-open-draft-002",
+      "applicant_alias": "Jordan Lee",
+      "product_name": "Savings Builder",
+      "service_version_id": "svc-desc-2026-08-04-v2",
+      "status": "draft",
+      "citations": [
+        "citation-p2-services"
+      ],
+      "kyc_notes": "Synthetic applicant journey for mobile-first onboarding with funding transfer reminders."
+    }
+  ],
+  "service_description_versions": [
+    {
+      "version_id": "svc-desc-2026-07-31-v1",
+      "sequence": 1,
+      "immutable": true,
+      "created_at": "2026-07-31T18:00:00Z",
+      "title": "ACME Bank Service Portfolio",
+      "summary": "First reviewed synthesis of the Demo 1 generated banking services.",
+      "services": [
+        {
+          "service_id": "checking-360",
+          "name": "Checking 360",
+          "category": "daily-banking",
+          "channel_focus": "mobile-and-branch"
+        },
+        {
+          "service_id": "refinance-assist",
+          "name": "Refinance Assist",
+          "category": "lending",
+          "channel_focus": "advisor-led"
+        }
+      ],
+      "citations": [
+        "citation-p1-portfolio",
+        "citation-p2-services"
+      ],
+      "derived_from_feedback": [],
+      "content_hash": "sha256:1fa1993f343dea713884a4b24be2dd63267e06fae723078e15ad2ad41943614d"
+    },
+    {
+      "version_id": "svc-desc-2026-08-04-v2",
+      "sequence": 2,
+      "immutable": true,
+      "created_at": "2026-08-04T13:05:00Z",
+      "title": "ACME Bank Service Portfolio",
+      "summary": "Second immutable cut that normalizes channel guidance and ties generated media back to citations.",
+      "services": [
+        {
+          "service_id": "checking-360",
+          "name": "Checking 360",
+          "category": "daily-banking",
+          "channel_focus": "mobile-and-branch"
+        },
+        {
+          "service_id": "savings-builder",
+          "name": "Savings Builder",
+          "category": "deposits",
+          "channel_focus": "mobile-first"
+        },
+        {
+          "service_id": "wealth-insights",
+          "name": "Wealth Insights",
+          "category": "advisory",
+          "channel_focus": "advisor-led"
+        },
+        {
+          "service_id": "refinance-assist",
+          "name": "Refinance Assist",
+          "category": "lending",
+          "channel_focus": "advisor-led"
+        }
+      ],
+      "citations": [
+        "citation-p1-portfolio",
+        "citation-p2-services",
+        "citation-p3-journeys"
+      ],
+      "derived_from_feedback": [
+        "feedback-v1-tone"
+      ],
+      "content_hash": "sha256:43567d388c06ea1ac402e14c83dc933e64da9f5ce7c33854af2453d2bd674877"
+    }
+  ],
+  "etag": "W/\"rv-1-efaf31f243d0861d696a4ef1\""
+}

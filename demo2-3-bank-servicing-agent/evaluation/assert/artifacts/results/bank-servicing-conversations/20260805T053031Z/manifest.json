@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-08-05T05:35:04.751215+00:00",
+  "status": "failed",
+  "ended_at": "2026-08-05T05:43:22.653145+00:00",
+  "stages": {
+    "inference": "completed",
+    "judge": "failed"
+  },
+  "pid": 32,
+  "host": "bank-servicing-assert-b4q8nsk-8ml62",
+  "heartbeat_at": "2026-08-05T05:43:15.011488+00:00",
+  "stage_timings": {
+    "inference": {
+      "started_at": "2026-08-05T05:35:05.523338+00:00",
+      "ended_at": "2026-08-05T05:41:45.944103+00:00",
+      "duration_secs": 399.92
+    },
+    "judge": {
+      "started_at": "2026-08-05T05:41:46.524125+00:00",
+      "ended_at": "2026-08-05T05:43:21.683534+00:00",
+      "duration_secs": 94.741
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "bank-servicing-regression-core",
+  "version": "1.0.0",
+  "local_uri": "../../evaluation/foundry/datasets/regression_cases.jsonl",
+  "case_count": 4,
+  "suite_id": "regression-core",
+  "non_production_data_only": true
+}

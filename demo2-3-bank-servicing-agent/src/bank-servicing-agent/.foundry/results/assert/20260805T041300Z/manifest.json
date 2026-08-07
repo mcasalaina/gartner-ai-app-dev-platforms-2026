@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-08-05T04:14:26.582003+00:00",
+  "status": "failed",
+  "ended_at": "2026-08-05T04:18:26.166107+00:00",
+  "stages": {
+    "inference": "failed"
+  },
+  "pid": 35,
+  "host": "bank-servicing-assert-ooaudp6-tr7hp",
+  "heartbeat_at": "2026-08-05T04:18:01.019572+00:00",
+  "stage_timings": {
+    "inference": {
+      "started_at": "2026-08-05T04:14:27.333860+00:00",
+      "ended_at": "2026-08-05T04:18:25.072179+00:00",
+      "duration_secs": 237.254
+    }
+  }
+}

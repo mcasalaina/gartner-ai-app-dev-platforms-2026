@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "case_invalid_when_correlation_incomplete": true,
+  "required_checks": [
+    "approved source routing",
+    "mode and tool ordering",
+    "KYC confirmation boundary",
+    "salary refusal evidence",
+    "no-content Work IQ access checks",
+    "Work IQ server and tool selection",
+    "MCP approval continuations",
+    "absence of mutating tool calls",
+    "content-free correlation baggage"
+  ]
+}

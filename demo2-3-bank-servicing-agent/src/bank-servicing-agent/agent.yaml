@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/AgentSchema/refs/heads/main/schemas/v1.0/ContainerAgent.yaml
+kind: hosted
+name: bank-servicing-agent
+description: Marco's Teller for Acme Bank service discovery and customer servicing.
+protocols:
+  - protocol: responses
+    version: 2.0.0
+resources:
+  cpu: '1'
+  memory: 2Gi
+environment_variables:
+  - name: AZURE_AI_MODEL_DEPLOYMENT_NAME
+    value: ${AZURE_AI_MODEL_DEPLOYMENT_NAME}
+  - name: TOOLBOX_ENDPOINT
+    value: ${TOOLBOX_ENDPOINT}
+  - name: AGENT_INSTRUCTIONS_PATH
+    value: instructions.md
+  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+    value: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+  - name: OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT
+    value: 'false'
+  - name: AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED
+    value: 'false'
+  - name: AZURE_TRACING_GEN_AI_INCLUDE_BINARY_DATA
+    value: 'false'
+  - name: VOICE_LIVE_ENDPOINT
+    value: ${VOICE_LIVE_ENDPOINT}
+  - name: VOICE_LIVE_API_VERSION
+    value: '2026-04-10'
+  - name: VOICE_LIVE_AGENT_NAME
+    value: bank-servicing-agent
+  - name: VOICE_LIVE_PROJECT_NAME
+    value: ${AZURE_AI_PROJECT_NAME}
+  - name: VOICE_LIVE_VOICE
+    value: ${VOICE_LIVE_VOICE}
+  - name: AGENT365_TENANT_ID
+    value: ${AGENT365_TENANT_ID}
+  - name: AGENT365_BLUEPRINT_CLIENT_ID
+    value: ${AGENT365_BLUEPRINT_CLIENT_ID}
+  - name: AGENT365_BLUEPRINT_SECRET_VAULT_URL
+    value: ${AGENT365_BLUEPRINT_SECRET_VAULT_URL}
+  - name: AGENT365_BLUEPRINT_SECRET_NAME
+    value: ${AGENT365_BLUEPRINT_SECRET_NAME}
+  - name: AGENT365_INSTANCE_CLIENT_ID
+    value: ${AGENT365_INSTANCE_CLIENT_ID}
+  - name: AGENT365_AGENT_USER_ID
+    value: ${AGENT365_AGENT_USER_ID}
+  - name: A365_USE_S2S_ENDPOINT
+    value: 'true'
+  - name: WORK_IQ_MAIL_MCP_URL
+    value: ${WORK_IQ_MAIL_MCP_URL}
+  - name: WORK_IQ_MAIL_MCP_AUDIENCE
+    value: ${WORK_IQ_MAIL_MCP_AUDIENCE}

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "elapsed_s": 496.512,
+  "stages": {
+    "inference": {
+      "calls": 8,
+      "input_tokens": 11877,
+      "output_tokens": 235,
+      "cached_input_tokens": 2560,
+      "cache_creation_input_tokens": 0,
+      "cache_hit_rate": 0.2155426454491875,
+      "per_model": {
+        "azure/gpt-5.4-mini": {
+          "calls": 8,
+          "input_tokens": 11877,
+          "output_tokens": 235,
+          "cached_input_tokens": 2560,
+          "cache_creation_input_tokens": 0
+        }
+      },
+      "elapsed_s": 399.92
+    },
+    "judge": {
+      "calls": 11,
+      "input_tokens": 67080,
+      "output_tokens": 13361,
+      "cached_input_tokens": 53760,
+      "cache_creation_input_tokens": 0,
+      "cache_hit_rate": 0.8014311270125224,
+      "per_model": {
+        "azure/gpt-5.4-mini": {
+          "calls": 11,
+          "input_tokens": 67080,
+          "output_tokens": 13361,
+          "cached_input_tokens": 53760,
+          "cache_creation_input_tokens": 0
+        }
+      },
+      "elapsed_s": 94.741
+    }
+  },
+  "per_model": {
+    "azure/gpt-5.4-mini": {
+      "calls": 19,
+      "input_tokens": 78957,
+      "output_tokens": 13596,
+      "cached_input_tokens": 56320,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "totals": {
+    "calls": 19,
+    "input_tokens": 78957,
+    "output_tokens": 13596,
+    "cached_input_tokens": 56320,
+    "cache_creation_input_tokens": 0,
+    "cache_hit_rate": 0.7132996441100853
+  }
+}

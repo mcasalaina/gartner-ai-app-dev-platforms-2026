@@ -1,0 +1,120 @@
+{
+  "$schema": "../../content/schemas/bank-servicing-toolbox.schema.json",
+  "schema_version": "1.0.0",
+  "toolbox": {
+    "name": "bank-servicing-agent-tools",
+    "release_tag": "2026-08-04.1",
+    "project_endpoint": "https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project",
+    "default_endpoint": "https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project/toolboxes/bank-servicing-agent-tools/mcp?api-version=v1",
+    "description": "Bank servicing toolbox that preserves user identity for Fabric IQ and Work IQ, reuses the existing bank policy knowledge base connection, and uses project identity for service publication operations."
+  },
+  "identity_contract": {
+    "user_identity_tools": [
+      "customer_finance",
+      "work_context"
+    ],
+    "service_identity_tools": [
+      "service_publication"
+    ],
+    "forbidden_user_token_forwarding": true,
+    "notes": "Fabric IQ and Work IQ must preserve the signed-in caller identity. Non-user service publication operations use project managed identity. The existing bank policy KB connection remains a shared read-only service connection."
+  },
+  "tools": [
+    {
+      "type": "fabric_iq_preview",
+      "name": "customer_finance",
+      "server_label": "fabric-iq-acmebank",
+      "project_connection_id": "fabric-iq-acmebank",
+      "server_url": "connection-target://fabric-iq-acmebank",
+      "identity_mode": "user_entra_token",
+      "preserve_user_identity": true,
+      "require_approval": "never"
+    },
+    {
+      "type": "mcp",
+      "name": "work_context",
+      "server_label": "workiq",
+      "project_connection_id": "WorkIQ",
+      "identity_mode": "user_entra_token",
+      "preserve_user_identity": true,
+      "require_approval": "never"
+    },
+    {
+      "type": "mcp",
+      "name": "bank_policy",
+      "server_label": "bank-policy-foundryiq",
+      "project_connection_id": "kb-acme-bank-foundryiq",
+      "identity_mode": "connection_managed",
+      "preserve_user_identity": false,
+      "require_approval": "never"
+    },
+    {
+      "type": "openapi",
+      "name": "service_publication",
+      "identity_mode": "project_managed_identity",
+      "preserve_user_identity": false,
+      "openapi": {
+        "name": "service_publication",
+        "spec": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Bank Servicing Content Publication API",
+            "version": "2026-08-04.1"
+          },
+          "servers": [
+            {
+              "url": "https://bank-servicing-content.internal"
+            }
+          ],
+          "paths": {
+            "/content/publish/plan": {
+              "post": {
+                "operationId": "planPublish",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Publish plan accepted"
+                  }
+                }
+              }
+            },
+            "/content/publish/execute": {
+              "post": {
+                "operationId": "executePublish",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "202": {
+                    "description": "Publish execution started"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "auth": {
+          "type": "managed_identity",
+          "audience": "https://storage.azure.com/"
+        }
+      },
+      "require_approval": "always"
+    }
+  ]
+}

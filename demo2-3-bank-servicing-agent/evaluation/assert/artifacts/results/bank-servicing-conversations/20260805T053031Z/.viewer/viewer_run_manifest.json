@@ -1,0 +1,50 @@
+{
+  "schema_version": 4,
+  "generator_version": "viewer-read-model-v3",
+  "suite_id": "bank-servicing-conversations",
+  "run_id": "20260805T053031Z",
+  "source_files": {
+    "inference_set.jsonl": {
+      "path": "inference_set.jsonl",
+      "size_bytes": 168665,
+      "mtime_ms": 1785908503257
+    },
+    "scores.jsonl": {
+      "path": "scores.jsonl",
+      "size_bytes": 96413,
+      "mtime_ms": 1785908596127
+    },
+    "manifest.json": {
+      "path": "manifest.json",
+      "size_bytes": 630,
+      "mtime_ms": 1785908595321
+    },
+    "config.yaml": {
+      "path": "config.yaml",
+      "size_bytes": 5238,
+      "mtime_ms": 1785880568000
+    }
+  },
+  "derived_files": {
+    "viewer_prompt_rows.json": {
+      "path": ".viewer/viewer_prompt_rows.json",
+      "size_bytes": 21443,
+      "mtime_ms": 1785908598900
+    },
+    "viewer_audit_rows.json": {
+      "path": ".viewer/viewer_audit_rows.json",
+      "size_bytes": 15802,
+      "mtime_ms": 1785908599517
+    },
+    "viewer_transcript_index.json": {
+      "path": ".viewer/viewer_transcript_index.json",
+      "size_bytes": 1831,
+      "mtime_ms": 1785908597406
+    },
+    "viewer_score_index.json": {
+      "path": ".viewer/viewer_score_index.json",
+      "size_bytes": 1687,
+      "mtime_ms": 1785908600202
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "passed": true,
+  "response": "## Request Assessment\nAuthenticated access is available for all three configured Work IQ surfaces. [W1]\n\n## Safety Checks\nNo Microsoft 365 content was retrieved, quoted, summarized, or searched. [W1]\n\n## Recommended Next Step\n{\"copilot\":\"authenticated\",\"mail\":\"authenticated\",\"teams\":\"authenticated\"}\n\nIQ services queried: Work IQ\nSources used: Work IQ",
+  "timestamp": "2026-08-05T05:54:52.239342+00:00"
+}

@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+requiredVersions:
+    extensions:
+        azure.ai.agents: '>=1.0.0-beta.6'
+name: gartner-bank-servicing-agent
+metadata:
+    template: gartner-bank-servicing-agent
+services:
+    ai-project:
+        host: azure.ai.project
+    bank-servicing-agent:
+        project: src/bank-servicing-agent
+        host: azure.ai.agent
+        language: python
+        uses:
+            - ai-project
+        codeConfiguration:
+            dependencyResolution: remote_build
+            entryPoint: main.py
+            runtime: python_3_13
+        container:
+            resources:
+                cpu: "1"
+                memory: 2Gi
+        description: Marco's Teller for Acme Bank service discovery and customer servicing.
+        displayName: Bank Servicing Agent
+        environmentVariables:
+            - name: AZURE_AI_MODEL_DEPLOYMENT_NAME
+              value: gpt-5.4-mini
+            - name: TOOLBOX_ENDPOINT
+              value: ${TOOLBOX_ENDPOINT}
+            - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+              value: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+            - name: AGENT_INSTRUCTIONS_PATH
+              value: instructions.md
+            - name: VOICE_LIVE_ENDPOINT
+              value: https://4iq-foundry-project-resource.services.ai.azure.com
+            - name: VOICE_LIVE_API_VERSION
+              value: "2026-04-10"
+            - name: VOICE_LIVE_AGENT_NAME
+              value: bank-servicing-agent
+            - name: VOICE_LIVE_PROJECT_NAME
+              value: 4iq-foundry-project
+            - name: VOICE_LIVE_VOICE
+              value: en-US-Davis:DragonHDLatestNeural
+            - name: AGENT365_TENANT_ID
+              value: ${AGENT365_TENANT_ID}
+            - name: AGENT365_BLUEPRINT_CLIENT_ID
+              value: ${AGENT365_BLUEPRINT_CLIENT_ID}
+            - name: AGENT365_BLUEPRINT_SECRET_VAULT_URL
+              value: ${AGENT365_BLUEPRINT_SECRET_VAULT_URL}
+            - name: AGENT365_BLUEPRINT_SECRET_NAME
+              value: ${AGENT365_BLUEPRINT_SECRET_NAME}
+            - name: AGENT365_INSTANCE_CLIENT_ID
+              value: ${AGENT365_INSTANCE_CLIENT_ID}
+            - name: AGENT365_AGENT_USER_ID
+              value: ${AGENT365_AGENT_USER_ID}
+            - name: A365_USE_S2S_ENDPOINT
+              value: "true"
+            - name: WORK_IQ_MAIL_MCP_URL
+              value: ${WORK_IQ_MAIL_MCP_URL}
+            - name: WORK_IQ_MAIL_MCP_AUDIENCE
+              value: ${WORK_IQ_MAIL_MCP_AUDIENCE}
+        kind: hosted
+        name: bank-servicing-agent
+        protocols:
+            - protocol: responses
+              version: 2.0.0
+infra:
+    provider: microsoft.foundry

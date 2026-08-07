@@ -1,0 +1,17 @@
+name: bank-servicing-dlp-guardrails-v6
+agent:
+  name: bank-servicing-agent
+  kind: hosted
+  version: "6"
+  model: gpt-5.4-mini
+  config: .agent_configs/baseline/metadata.yaml
+dataset:
+  local_uri: ../../evaluation/foundry/datasets/dlp_cases.jsonl
+evaluators:
+  - builtin.relevance
+  - builtin.task_adherence
+  - builtin.intent_resolution
+  - builtin.indirect_attack
+  - builtin.tool_call_accuracy
+options:
+  eval_model: gpt-5.4-mini

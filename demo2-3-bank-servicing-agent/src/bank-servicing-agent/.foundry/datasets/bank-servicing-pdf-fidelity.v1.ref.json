@@ -1,0 +1,8 @@
+{
+  "name": "bank-servicing-pdf-fidelity",
+  "version": "1.0.0",
+  "local_uri": "../../evaluation/foundry/datasets/pdf_fidelity_cases.jsonl",
+  "case_count": 3,
+  "suite_id": "pdf-fidelity",
+  "non_production_data_only": true
+}

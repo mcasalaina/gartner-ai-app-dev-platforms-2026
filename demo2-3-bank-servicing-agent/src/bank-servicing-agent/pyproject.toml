@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling==1.28.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bank-servicing-agent"
+version = "0.1.0"
+description = "Microsoft Foundry hosted bank servicing agent for Gartner demos"
+requires-python = ">=3.13"
+dependencies = [
+  "agent-framework-foundry==1.10.1",
+  "agent-framework-foundry-hosting==1.0.0b260730",
+  "azure-ai-agentserver-optimization>=1.0.0b1",
+  "azure-identity==1.25.3",
+  "azure-monitor-opentelemetry>=1.8,<2",
+  "httpx>=0.28,<1",
+  "PyYAML==6.0.3",
+  "python-dotenv==1.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.1.1",
+  "PyYAML==6.0.3",
+  "ruff==0.15.21",
+]
+
+[project.scripts]
+bank-servicing-agent = "bank_servicing_agent.runtime:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bank_servicing_agent"]

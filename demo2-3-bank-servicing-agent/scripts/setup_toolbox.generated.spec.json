@@ -1,0 +1,90 @@
+{
+  "description": "Bank servicing toolbox that preserves user identity for Fabric IQ and Work IQ, reuses the existing bank policy knowledge base connection, and uses project identity for service publication operations.",
+  "tools": [
+    {
+      "type": "fabric_iq_preview",
+      "name": "customer_finance",
+      "server_label": "fabric-iq-acmebank",
+      "project_connection_id": "fabric-iq-acmebank",
+      "server_url": "https://api.fabric.microsoft.com/v1/mcp/workspaces/ae8eaa7c-5ace-4256-967f-25c84dc9313a/dataagents/90371bd6-280d-40a4-aaff-f153be2e63bc/agent",
+      "require_approval": "never"
+    },
+    {
+      "type": "mcp",
+      "server_label": "workiq",
+      "project_connection_id": "WorkIQ",
+      "require_approval": "never"
+    },
+    {
+      "type": "mcp",
+      "server_label": "bank-policy-foundryiq",
+      "project_connection_id": "kb-acme-bank-foundryiq",
+      "require_approval": "never"
+    },
+    {
+      "type": "openapi",
+      "openapi": {
+        "name": "service_publication",
+        "spec": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "Bank Servicing Content Publication API",
+            "version": "2026-08-04.1"
+          },
+          "servers": [
+            {
+              "url": "https://bank-servicing-content.internal"
+            }
+          ],
+          "paths": {
+            "/content/publish/plan": {
+              "post": {
+                "operationId": "planPublish",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Publish plan accepted"
+                  }
+                }
+              }
+            },
+            "/content/publish/execute": {
+              "post": {
+                "operationId": "executePublish",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "202": {
+                    "description": "Publish execution started"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "auth": {
+          "type": "managed_identity",
+          "audience": "https://storage.azure.com/"
+        }
+      },
+      "require_approval": "always"
+    }
+  ]
+}

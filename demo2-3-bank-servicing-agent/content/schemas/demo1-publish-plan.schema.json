@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acmebank.example/schemas/demo1-publish-plan.schema.json",
+  "title": "Demo 1 service publish plan",
+  "type": "object",
+  "required": [
+    "plan_version",
+    "dry_run",
+    "project_endpoint",
+    "source_manifest",
+    "record_version",
+    "if_match",
+    "steps",
+    "mutations_executed"
+  ],
+  "properties": {
+    "plan_version": {
+      "type": "string"
+    },
+    "dry_run": {
+      "type": "boolean"
+    },
+    "project_endpoint": {
+      "type": "string",
+      "format": "uri"
+    },
+    "source_manifest": {
+      "type": "string"
+    },
+    "record_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "if_match": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sequence",
+          "target",
+          "action",
+          "identity",
+          "payload"
+        ],
+        "properties": {
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "target": {
+            "enum": [
+              "blob",
+              "foundry_iq"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "identity": {
+            "enum": [
+              "project_managed_identity",
+              "agent_identity"
+            ]
+          },
+          "payload": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "mutations_executed": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

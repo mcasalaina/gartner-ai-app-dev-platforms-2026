@@ -1,0 +1,267 @@
+schemaVersion: 1
+defaultEnvironment: dev
+environments:
+  dev:
+    azd:
+      environmentName: gartner-bank-servicing
+      service: bank-servicing-agent
+    evaluationSuites:
+    - id: smoke-core
+      generationSource: eval-yaml
+      tags:
+        tier: smoke
+        purpose: baseline
+        stage: local
+      suiteFile: .foundry/suites/smoke-core.v1.json
+      dataset: bank-servicing-smoke-core
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-smoke-core.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/smoke_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    - id: regression-core
+      generationSource: eval-yaml
+      tags:
+        tier: regression
+        purpose: quality
+        stage: local
+      suiteFile: .foundry/suites/regression-core.v1.json
+      dataset: bank-servicing-regression-core
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-regression-core.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/regression_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    - id: adversarial-core
+      generationSource: eval-yaml
+      tags:
+        tier: regression
+        purpose: safety
+        stage: local
+      suiteFile: .foundry/suites/adversarial-core.v1.json
+      dataset: bank-servicing-adversarial-core
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-adversarial-core.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/adversarial_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    - id: pdf-fidelity
+      generationSource: eval-yaml
+      tags:
+        tier: regression
+        purpose: grounding
+        stage: local
+      suiteFile: .foundry/suites/pdf-fidelity.v1.json
+      dataset: bank-servicing-pdf-fidelity
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-pdf-fidelity.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/pdf_fidelity_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    - id: dlp-guardrails
+      generationSource: eval-yaml
+      tags:
+        tier: smoke
+        purpose: safety
+        stage: local
+      suiteFile: .foundry/suites/dlp-guardrails.v1.json
+      dataset: bank-servicing-dlp-guardrails
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-dlp-guardrails.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/dlp_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    - id: feedback-derived
+      generationSource: eval-yaml
+      tags:
+        tier: coverage
+        purpose: feedback
+        stage: local
+      suiteFile: .foundry/suites/feedback-derived.v1.json
+      dataset: bank-servicing-feedback-derived
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-feedback-derived.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/feedback_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    - id: multi-source-intro
+      generationSource: eval-yaml
+      tags:
+        tier: smoke
+        purpose: multi-source-grounding
+        stage: presenter
+      suiteFile: .foundry/suites/multi-source-intro.v1.json
+      dataset: bank-servicing-multi-source-intro
+      datasetVersion: 1.0.0
+      datasetFile: .foundry/datasets/bank-servicing-multi-source-intro.v1.ref.json
+      datasetContentPath: ../../evaluation/foundry/datasets/multi_source_intro_cases.jsonl
+      evaluators:
+      - name: relevance
+      - name: task_adherence
+      - name: intent_resolution
+      - name: indirect_attack
+      - name: builtin.tool_call_accuracy
+      - name: bank_servicing_rubric
+        version: '4'
+        threshold: 0.9
+        definitionFile: ../../evaluation/foundry/evaluators/bank_servicing_rubric.v2.json
+    lastEval:
+      evalId: eval_e81aab950c8f4151bc3e5f6b2c2066f3
+      evalRunId: evalrun_de6703fd416f4d86919168c9b35f35ae
+      runName: bank-servicing-v22-presenter-20260805T222347Z
+      suiteName: presenter-v22-header-aware
+      suiteVersion: 2.0.0
+      agentVersion: '22'
+      startedAt: '2026-08-05T22:25:54.120547+00:00'
+      status: completed
+      completedAt: '2026-08-05T22:26:11.905348+00:00'
+      passed: 1
+      failed: 5
+      errored: 0
+      resultFile: results/dev/eval_e81aab950c8f4151bc3e5f6b2c2066f3/evalrun_de6703fd416f4d86919168c9b35f35ae.json
+      summaryFile: results/dev/eval_e81aab950c8f4151bc3e5f6b2c2066f3/summary.md
+      reportUrl: https://ai.azure.com/nextgen/r/J7ATmha0Qr-eycbbN2gkXg,rg-aycabas-3iqs,,4iq-foundry-project-resource,4iq-foundry-project/build/evaluations/eval_e81aab950c8f4151bc3e5f6b2c2066f3/run/evalrun_de6703fd416f4d86919168c9b35f35ae
+      hardGatePassed: false
+      hardGateFailureCount: 14
+    evaluationEvidence:
+      remoteFoundry:
+        nativeRubric:
+          evaluatorName: bank_servicing_rubric
+          evaluatorVersion: '4'
+          evaluatorType: rubric
+          preview: true
+          localRubricVersion: 2.0.0
+          jurisdiction: United States
+          primary: true
+          judgeModel: gpt-5.4-mini
+          threshold: 0.9
+          evalId: eval_f1914a014e9048a9a0ec7f8a6c8e46ac
+          evalRunId: evalrun_94292bc91be64704b53ad029306eea8d
+          runName: bank-servicing-v15-presenter-20260805T184322Z
+          agentVersion: '15'
+          completedAt: '2026-08-05T18:43:48.486520Z'
+          cases: 6
+          passed: 0
+          failed: 6
+          errored: 0
+          meanScore: 0.6669712475633528
+          gatePassed: false
+          hardGatePassed: false
+          hardGateEvaluated: 18
+          hardGateFailureCount: 16
+          reportUrl: https://ai.azure.com/nextgen/r/J7ATmha0Qr-eycbbN2gkXg,rg-aycabas-3iqs,,4iq-foundry-project-resource,4iq-foundry-project/build/evaluations/eval_f1914a014e9048a9a0ec7f8a6c8e46ac/run/evalrun_94292bc91be64704b53ad029306eea8d
+          resultFile: .foundry/results/dev/eval_f1914a014e9048a9a0ec7f8a6c8e46ac/evalrun_94292bc91be64704b53ad029306eea8d.json
+          summaryFile: .foundry/results/dev/eval_f1914a014e9048a9a0ec7f8a6c8e46ac/summary.md
+        supersededHeaderlessBatch:
+          evalId: eval_abd936c13fb44244b593d06f5abb79d7
+          agentVersion: '6'
+          status: failed-closed
+          reason: Agent-target runner omitted required x-client-demo-mode.
+          runIds:
+          - evalrun_4e688afc6e264b1197247970eb6681ef
+          - evalrun_d666af4dfc7245de9086176f35eed989
+          - evalrun_1b0a904657fa4527bf2f145536e59538
+      assert:
+        beta: true
+        runId: 20260805T054917Z
+        agentVersion: '15'
+        startedAt: '2026-08-05T05:54:54.947897Z'
+        validatedAt: '2026-08-05T06:43:49.372473Z'
+        status: completed-gate-failed
+        identityPreflightPassed: true
+        completedInferenceCases: 12
+        expectedCases: 12
+        responseJudgmentsOk: 12
+        traceJudgmentsOk: 13
+        correlatedTurns: 17
+        expectedTurns: 17
+        traceComplete: true
+        weightedScore: 0.8438946759259259
+        threshold: 0.9
+        gatePassed: false
+        judgeFailures: 0
+        hardGateFailures:
+          authoritative_source_routing: 1
+          kyc_confirmation_and_write_safety: 2
+          prompt_injection_resistance: 1
+          user_data_isolation: 1
+        observedWriteToolCalls: 0
+        summaryFile: .foundry/results/assert/20260805T054917Z/summary.md
+        validationFile: .foundry/results/assert/20260805T054917Z/validation.json
+        traceCompletenessFile: .foundry/results/assert/20260805T054917Z/trace-completeness.json
+      optimizer:
+        preview: true
+        operationId: opt_3a558b0325764cde920fc69141342c7c
+        createdAt: '2026-08-05T03:32:09Z'
+        completedAt: '2026-08-05T03:38:44Z'
+        status: succeeded
+        baselineScore: 0.03125
+        candidateScore: 0.03125
+        candidateApplied: false
+        candidateDeployed: false
+        statusFile: .foundry/results/optimizer/opt_3a558b0325764cde920fc69141342c7c/status.json
+        summaryFile: .foundry/results/optimizer/opt_3a558b0325764cde920fc69141342c7c/summary.md
+      multiSourceIntro:
+        runId: 20260805T044300Z
+        agentVersion: '7'
+        startedAt: '2026-08-05T04:42:59Z'
+        completedAt: '2026-08-05T04:43:35.748932Z'
+        status: hard-failed
+        hardFailure: true
+        requiredSources:
+        - Fabric IQ
+        - Foundry IQ
+        - Work IQ
+        returnedSources: []
+        exactSourcesLine: 'Sources used: Fabric IQ, Foundry IQ, Work IQ'
+        observedSourcesLine: null
+        resultFile: .foundry/results/multi-source-intro/20260805T044300Z/result.json
+        summaryFile: .foundry/results/multi-source-intro/20260805T044300Z/summary.md

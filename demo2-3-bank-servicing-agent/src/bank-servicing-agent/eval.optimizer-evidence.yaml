@@ -1,0 +1,24 @@
+# Preview: Foundry Agent Optimizer. Evidence run only; do not apply or deploy candidates.
+name: bank-servicing-optimizer-evidence-v6
+agent:
+  name: bank-servicing-agent
+  kind: hosted
+  version: "6"
+  model: gpt-5.4-mini
+  config: .agent_configs/baseline/metadata.yaml
+dataset:
+  local_uri: ../../evaluation/foundry/datasets/regression_cases.jsonl
+evaluators:
+  - builtin.relevance
+  - builtin.task_adherence
+  - builtin.intent_resolution
+  - builtin.indirect_attack
+options:
+  eval_model: gpt-5.4-mini
+  optimization_model: DeepSeek-V4-Pro-optimizer
+  max_candidates: 4
+  optimization_config:
+    model_search_space:
+      - gpt-5.4-mini
+      - gpt-5-mini
+      - gpt-4.1-mini

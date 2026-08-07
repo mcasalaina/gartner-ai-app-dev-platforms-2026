@@ -1,6 +1,6 @@
 # Azure Deployment Plan
 
-> **Status:** Validated
+> **Status:** Demo 1 Validated; Demos 2/3 Validated
 
 Generated: 2026-08-01
 
@@ -212,3 +212,135 @@ Place the `.env` containing `WEBIQ_API_KEY` in this worktree or export the value
 to the deployment shell. The only `.env` currently present is azd's generated
 environment file, and it does not contain the key. Then create the Web IQ
 connection and Toolbox, deploy the Hosted Agent, and run the full live workflow.
+
+## 12. Gartner Demos 2 and 3 — Bank Servicing Agent
+
+### Approved scope
+
+The user approved a new `demo2-3-bank-servicing-agent/` implementation that
+combines Demos 2 and 3 as one Python 3.13 Microsoft Foundry hosted agent with
+two system-controlled modes.
+
+| Attribute | Value |
+|---|---|
+| Classification | POC / executive demo |
+| Scale | Single presenter; one web-backend replica because voice handles are in memory |
+| Subscription | M365 Advocacy (new) (`27b0139a-16b4-42bf-9ec9-c6db3768245e`) |
+| Foundry project | `4iq-foundry-project` |
+| Foundry endpoint | `https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project` |
+| Location | East US 2, inherited from the explicitly selected project |
+| Production model | Existing `gpt-5.4-mini` deployment |
+| Voice | Voice Live `en-US-Davis:DragonHDLatestNeural` |
+| Web access | Public shell; Entra sign-in required for every agent/API/voice action |
+
+### Architecture
+
+| Component | Azure service | Path |
+|---|---|---|
+| Bank Servicing Agent | Foundry hosted agent, Responses 2.0 | `demo2-3-bank-servicing-agent/src/bank-servicing-agent` |
+| Authenticated web API and Voice Live proxy | Azure Container Apps | `demo2-3-bank-servicing-agent/web/backend` |
+| Customer/admin web | Azure Container Apps | `demo2-3-bank-servicing-agent/web/frontend` |
+| Agent 365 bridge | Azure Container Apps plus Entra Auth SDK sidecar | `demo2-3-bank-servicing-agent/a365/bridge` |
+| Reviewed content/media and evaluation artifacts | Private Blob Storage with versioning and soft delete | `demo2-3-bank-servicing-agent/content` |
+| Confidential app credential | Key Vault with RBAC and purge protection | `demo2-3-bank-servicing-agent/infra` |
+| Telemetry | Existing `4iq-foundry-project-resource-appinsights` | Shared by agent, web, bridge, and evaluations |
+| ASSERT | Manual Container Apps Job | `demo2-3-bank-servicing-agent/evaluation/assert` |
+
+The hosted agent reuses the existing Fabric IQ, bank Foundry IQ, Work IQ, model,
+and telemetry assets. A separate Demo 1 service knowledge base is created so
+the existing policy corpus is not overwritten.
+
+### Identity
+
+- The SPA uses authorization code with PKCE for the web API.
+- MSAL uses same-window redirects and tab-scoped `sessionStorage`. Redirect
+  processing is incompatible with `memoryStorage`; no popup flow is used.
+- The web API validates the user token and performs confidential-client OBO to
+  `https://ai.azure.com/.default`.
+- Foundry Responses protocol 2.0 supplies trusted user/call identifiers and
+  propagates the call ID to user-scoped Toolbox connections.
+- Voice Live is opened by the backend with the same OBO user token; the browser
+  receives only an opaque, short-lived, one-use handle.
+- The replacement Agent 365 bridge preserves the existing standalone
+  agent-user identity and calls the same hosted-agent endpoint.
+- Production Azure code uses managed identity and resource-scoped RBAC.
+
+### Model and quota plan
+
+- Do not create another `gpt-5.4-mini` deployment; East US 2 usage is 1,198 of
+  1,200.
+- The admin-only A/B lab uses existing `gpt-5.4-mini`, `gpt-5-mini`, and
+  `gpt-4.1-mini` deployments.
+- Agent Optimizer requires a separate supported optimization model. East US 2
+  has no `gpt-5.4` standard quota, so use GA `DeepSeek-V4-Pro` at the validated
+  live capacity of 1. Its deployment is isolated in
+  `infra/optimizer-model.bicep` and is not created by the base web deployment.
+
+### Security and data
+
+- No API keys, client secrets, bearer tokens, real customer data, or salary
+  content are committed or logged.
+- Key Vault references supply the confidential-client credential.
+- Blob public access is disabled; versioning, change feed, and delete retention
+  are enabled.
+- Only synthetic KYC/account-opening data is used.
+- Bank-domain, prompt-injection, cross-user, salary-DLP, and confirmation gates
+  fail closed before downstream writes.
+- Reviewer/admin APIs enforce Entra app roles.
+
+### Execution checklist
+
+- [x] User approved the architecture and source-of-truth folder
+- [x] Confirm selected subscription, project, location, model deployments, and quota
+- [x] Create the repository and Foundry agent scaffold
+- [x] Complete hosted-agent, data, identity, web, bridge, and evaluation code
+- [x] Generate and build supporting Bicep
+- [x] Complete local functional verification
+- [x] Set this document to `Ready for Validation`
+- [x] Complete `azure-validate` with final deployment identities, credentials, images, and sidecar
+- [x] Invoke `azure-deploy` only after validation succeeds
+
+### Validation steps
+
+- [x] Compile and lint every Bicep template
+- [x] Run local agent, backend, bridge, frontend, content, rubric, and ASSERT checks
+- [x] Confirm Azure CLI authentication, subscription, tenant, project region, and target resource group
+- [x] Run ARM template validation with non-secret structural placeholders
+- [x] Run ARM what-if and confirm it contains no deletes or modifications
+- [x] Review static RBAC assignments for data-plane access and resource-level scope
+- [x] Inspect subscription policy assignments
+- [x] Build all production images with Azure Container Registry remote builds
+- [x] Substitute and validate final Entra, Agent 365, registry image, and sidecar values
+
+### Validation proof
+
+| Check | Result |
+|---|---|
+| Local application suites | Agent 22 passed and Ruff passed; backend 23 passed; bridge 4 passed; content/shared-rubric 6 passed; frontend lint, 4 tests, and production build passed; ASSERT configuration, 21 tests, and Ruff passed |
+| Foundry assets and Toolbox | Evaluation/optimizer asset validation and Toolbox dry-run passed |
+| Bicep | Base infrastructure, ACR role module, optimizer model, and ASSERT job compile; `main.bicep` lint is clean |
+| Azure authentication | Authenticated to `M365 Advocacy (new)` (`27b0139a-16b4-42bf-9ec9-c6db3768245e`) in tenant `a9d9510e-7131-4355-8b7e-37e7b1e99862` |
+| ARM validation | Final resource-group validation succeeded in `rg-aycabas-3iqs` with the live app IDs, Agent 365 IDs, image references, and credentials; live optimizer deployment succeeded at capacity 1 after quota rejected 5,000 |
+| ARM what-if | Succeeded with 21 creates, 0 modifies, and 0 deletes |
+| Azure Policy | No subscription policy assignments returned |
+| Role assignment verification | Separate frontend, backend, and bridge identities; each has resource-scoped `AcrPull`; backend alone has `Storage Blob Data Contributor`; backend and bridge alone have `Key Vault Secrets User` |
+| Model catalog | `DeepSeek-V4-Pro` version `2026-04-23` is available with `GlobalStandard` and `DataZoneStandard`; the optimizer-only live deployment uses capacity 1 |
+| Container packaging | ACR remote builds succeeded; the active OBO images are frontend `20260805.2` and backend `20260805.1` in `workmateacr4b5a1.azurecr.io` |
+| Entra registrations | Created dedicated API `e0c8999e-b5da-4d80-aef9-65c5bc18435b` and SPA `0946f17c-5ce5-4804-9508-a1d5f66af61f`; configured delegated scope, reviewer/admin roles, preauthorization, Azure AI admin consent, and fresh one-year credentials |
+| Agent 365 identity | Matched agent user `a7a91f6a-1c79-43f3-9653-c6a728d64f9c` to Entra agent ID `439176bf-94bd-497f-985b-a3c93cc989b2` by exact creation timestamp; retained blueprint `2c3685f3-7ad7-467b-96e8-dd3d06b99f55` |
+
+### Live OBO deployment proof
+
+| Check | Result |
+|---|---|
+| Hosted agent | `bank-servicing-agent` version 15 is active on Responses 2.0 with `gpt-5.4-mini` |
+| Web OBO | Signed-in service and customer first turns plus same-conversation follow-ups passed through the SPA, API validation, OBO exchange, and hosted agent |
+| Guard continuity | Salary DLP, unrelated-domain refusal, and a subsequent valid banking response passed in one conversation without downstream contamination |
+| Voice Live | Single-use handle, OBO WebSocket, hosted-agent session, Azure Speech transcript, and Davis audio passed; the spoken smoke test returned 333,600 audio bytes |
+| Timeout | Backend uses a configurable 90-second Foundry timeout; live grounded calls up to 38 seconds completed |
+| Telemetry | Both modes recorded with `gpt-5.4-mini`; token-hygiene query found zero bearer or JWT-like values |
+| Deferred channel | Agent 365 standalone cutover remains separate from the verified OBO baseline |
+
+**Validated by:** `azure-validate` workflow
+**Validation completed:** 2026-08-04
+**Validation status:** Complete for `M365 Advocacy (new)` in East US 2.

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/vdevPreview/MicrosoftTeams.schema.json",
+  "id": "2c3685f3-7ad7-467b-96e8-dd3d06b99f55",
+  "name": {
+    "short": "Bank Servicing Agent Template",
+    "full": "Bank Servicing Agent Template for Acme Bank"
+  },
+  "description": {
+    "short": "Retail-bank service discovery and customer servicing.",
+    "full": "Bank Servicing Agent Template supports retail-bank service discovery and customer servicing through one Microsoft Foundry hosted agent. It provides grounded policy and account guidance, preserves human approval boundaries, and gives each Agent 365 instance its own Microsoft 365 identity."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#9EC9D9",
+  "version": "2.0.2",
+  "manifestVersion": "devPreview",
+  "developer": {
+    "name": "Marco Casalaina",
+    "mpnId": "",
+    "websiteUrl": "https://github.com/mcasalaina/gartner-ai-app-dev-platforms-2026",
+    "privacyUrl": "https://privacy.microsoft.com/privacystatement",
+    "termsOfUseUrl": "https://www.microsoft.com/servicesagreement"
+  },
+  "agenticUserTemplates": [
+    {
+      "id": "7b0926a6-c4ee-445a-a913-bd054594bd09",
+      "file": "agenticUserTemplateManifest.json"
+    }
+  ]
+}

@@ -101,6 +101,13 @@ param voiceLiveAvatarModel string = 'vasa-1'
 @description('Whether the configured photo avatar is custom.')
 param voiceLiveAvatarCustomized bool = false
 
+@description('Enable Voice Live interim responses during tool calls and response latency.')
+param voiceLiveInterimResponseEnabled bool = true
+
+@description('Milliseconds before Voice Live speaks a latency-triggered interim response.')
+@minValue(0)
+param voiceLiveInterimResponseLatencyMs int = 800
+
 @description('Allowed browser origin after frontend deployment. Empty uses the generated frontend URL.')
 param allowedBrowserOrigin string = ''
 
@@ -559,6 +566,14 @@ resource backend 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'VOICE_LIVE_AVATAR_CUSTOMIZED'
               value: string(voiceLiveAvatarCustomized)
+            }
+            {
+              name: 'VOICE_LIVE_INTERIM_RESPONSE_ENABLED'
+              value: string(voiceLiveInterimResponseEnabled)
+            }
+            {
+              name: 'VOICE_LIVE_INTERIM_RESPONSE_LATENCY_MS'
+              value: string(voiceLiveInterimResponseLatencyMs)
             }
             {
               name: 'CONTENT_STORAGE_ACCOUNT_URL'

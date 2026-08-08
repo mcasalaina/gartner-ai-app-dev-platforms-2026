@@ -180,6 +180,12 @@ def test_app_config_describes_standard_avatar(client) -> None:
     assert response.status_code == 200
     assert response.json()["voice"]["name"] == "en-US-AlloyTurboMultilingualNeural"
     assert response.json()["voice"]["type"] == "azure-standard"
+    assert response.json()["voice"]["interimResponse"] == {
+        "enabled": True,
+        "mode": "static",
+        "triggers": ["tool", "latency"],
+        "latencyThresholdMs": 800,
+    }
     assert response.json()["voice"]["avatar"] == {
         "enabled": True,
         "character": "amara",

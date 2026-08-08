@@ -143,6 +143,16 @@ async def test_voice_live_session_configures_standard_photo_avatar() -> None:
     }
     assert session["input_audio_transcription"] == {"model": "azure-speech"}
     assert session["turn_detection"] == {"type": "azure_semantic_vad_multilingual"}
+    assert session["interim_response"] == {
+        "type": "static_interim_response",
+        "triggers": ["tool", "latency"],
+        "latency_threshold_ms": 800,
+        "texts": [
+            "Let me look that up for you.",
+            "I'm checking that now.",
+            "One moment while I pull that together.",
+        ],
+    }
     assert session["avatar"] == {
         "type": "photo-avatar",
         "model": "vasa-1",

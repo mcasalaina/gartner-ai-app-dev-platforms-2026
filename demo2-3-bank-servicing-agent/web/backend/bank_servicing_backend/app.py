@@ -229,6 +229,14 @@ def create_app(
                 "enabled": True,
                 "name": current.voice.voice_name,
                 "type": current.voice.voice_type,
+                "interimResponse": {
+                    "enabled": current.voice.interim_response_enabled,
+                    "mode": "static",
+                    "triggers": ["tool", "latency"],
+                    "latencyThresholdMs": (
+                        current.voice.interim_response_latency_threshold_ms
+                    ),
+                },
                 "avatar": {
                     "enabled": current.voice.avatar_enabled,
                     "character": current.voice.avatar_character,

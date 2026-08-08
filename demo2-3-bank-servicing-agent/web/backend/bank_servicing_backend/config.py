@@ -57,6 +57,8 @@ class VoiceSettings:
     avatar_model: str
     avatar_customized: bool
     handle_ttl_seconds: int
+    interim_response_enabled: bool = True
+    interim_response_latency_threshold_ms: int = 800
 
     @property
     def websocket_url(self) -> str:
@@ -136,6 +138,13 @@ class AppSettings:
             avatar_model=os.getenv("VOICE_LIVE_AVATAR_MODEL", "vasa-1"),
             avatar_customized=_boolean_env("VOICE_LIVE_AVATAR_CUSTOMIZED", default=False),
             handle_ttl_seconds=int(os.getenv("VOICE_HANDLE_TTL_SECONDS", "120")),
+            interim_response_enabled=_boolean_env(
+                "VOICE_LIVE_INTERIM_RESPONSE_ENABLED",
+                default=True,
+            ),
+            interim_response_latency_threshold_ms=int(
+                os.getenv("VOICE_LIVE_INTERIM_RESPONSE_LATENCY_MS", "800")
+            ),
         )
         _validate_url(foundry.project_endpoint, require_path=True)
         _validate_url(voice.endpoint)
@@ -143,6 +152,10 @@ class AppSettings:
             raise ConfigurationError("FOUNDRY_REQUEST_TIMEOUT_SECONDS must be greater than zero")
         if voice.handle_ttl_seconds <= 0:
             raise ConfigurationError("VOICE_HANDLE_TTL_SECONDS must be greater than zero")
+        if voice.interim_response_latency_threshold_ms < 0:
+            raise ConfigurationError(
+                "VOICE_LIVE_INTERIM_RESPONSE_LATENCY_MS must be zero or greater"
+            )
         return cls(
             environment=environment,
             host=host,

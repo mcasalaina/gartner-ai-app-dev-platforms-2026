@@ -143,6 +143,19 @@ class VoiceLiveClient:
                 "type": "azure_deep_noise_suppression"
             },
         }
+        if self._settings.interim_response_enabled:
+            session["interim_response"] = {
+                "type": "static_interim_response",
+                "triggers": ["tool", "latency"],
+                "latency_threshold_ms": (
+                    self._settings.interim_response_latency_threshold_ms
+                ),
+                "texts": [
+                    "Let me look that up for you.",
+                    "I'm checking that now.",
+                    "One moment while I pull that together.",
+                ],
+            }
         if self._settings.avatar_enabled:
             session["avatar"] = {
                 "type": "photo-avatar",

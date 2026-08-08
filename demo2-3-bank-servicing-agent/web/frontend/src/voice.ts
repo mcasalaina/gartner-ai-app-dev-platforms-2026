@@ -204,7 +204,7 @@ export class VoiceCall {
     this.stopMedia()
     const socket = this.socket
     this.socket = null
-    socket?.close(1011, 'Avatar session failed')
+    socket?.close(4000, 'Avatar session failed')
   }
 
   private stopMedia(): void {

@@ -375,11 +375,12 @@ WebRTC media, and a read-only `avatar_marketing` mode.
 | Check | Result | Timestamp |
 |---|---|---|
 | Hosted agent | `bank-servicing-agent` version 34 active on Responses 2.0 | 2026-08-07 |
-| Frontend | `bank-servicing-frontend:20260807.5`, revision `bank-servicing-web--0000015`, healthy and receiving 100% traffic | 2026-08-07 |
+| Frontend | `bank-servicing-frontend:20260808.2`, revision `bank-servicing-web--0000017`, healthy and receiving 100% traffic | 2026-08-08 |
 | Backend | `bank-servicing-backend:20260807.3`, revision `bank-servicing-api--0000011`, healthy and receiving 100% traffic | 2026-08-07 |
 | Runtime config | Live probe returned `avatar_marketing`, Amara, `vasa-1`, `en-US-AlloyTurboMultilingualNeural`, and avatar enabled | 2026-08-07 |
 | Public frontend | HTTP 200 and deployed bundle contains `Talk with Avatar` and `Alloy Multilingual` | 2026-08-07 |
-| Authenticated Edge acceptance | Both chat modes returned HTTP 200; avatar delivered 512x512 audio/video through WebRTC; microphone mute, unmute, and cleanup passed; desktop and mobile layouts had zero horizontal overflow | 2026-08-07 |
+| Authenticated Edge acceptance | Both chat modes returned HTTP 200; avatar delivered 512x512 audio/video through WebRTC; microphone mute, unmute, and cleanup passed; the workspace filled the 1912px Edge viewport with zero horizontal overflow | 2026-08-08 |
+| Avatar presentation | Live bundle displays `Meet the Avatar` and `Talk naturally in any language`, with no character name exposed in the interface | 2026-08-08 |
 | Live RBAC | Frontend/backend/bridge retain ACR Pull; backend retains Storage Blob Data Contributor and Key Vault Secrets User; bridge retains Key Vault Secrets User | 2026-08-07 |
 
 **Live frontend:** `https://bank-servicing-web.agreeablewave-d7d8bc74.eastus2.azurecontainerapps.io`

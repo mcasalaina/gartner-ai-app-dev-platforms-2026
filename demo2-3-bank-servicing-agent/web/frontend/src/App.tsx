@@ -389,7 +389,7 @@ function ConversationWorkspace({
               {!hasAvatarStream && (
                 <div className="avatar-placeholder">
                   <span aria-hidden="true">A</span>
-                  <strong>{voiceState === 'failed' ? 'Amara could not connect' : 'Preparing Amara'}</strong>
+                  <strong>{voiceState === 'failed' ? 'Avatar could not connect' : 'Preparing the Avatar'}</strong>
                   <small>{VOICE_STATE_LABELS[voiceState]}</small>
                 </div>
               )}
@@ -432,8 +432,8 @@ function ConversationWorkspace({
               <div className="avatar-intro">
                 <span className="avatar-monogram" aria-hidden="true">A</span>
                 <div>
-                  <strong>Meet Amara</strong>
-                  <p>Talk naturally in English or Spanish, or use text chat below.</p>
+                  <strong>Meet the Avatar</strong>
+                  <p>Talk naturally in any language, or use text chat below.</p>
                 </div>
               </div>
               <p className="eyebrow">Suggested question</p>
@@ -742,7 +742,7 @@ function AuthenticatedWorkspace() {
           <h2>Runtime</h2>
           <dl className="status-list">
             <div className="status-row"><dt>Model</dt><dd>gpt-5.4-mini</dd></div>
-            <div className="status-row"><dt>Avatar</dt><dd>Amara</dd></div>
+            <div className="status-row"><dt>Avatar</dt><dd>Photo avatar</dd></div>
             <div className="status-row"><dt>Voice</dt><dd>Alloy Multilingual</dd></div>
             <div className="status-row"><dt>Grounding</dt><dd>Fabric IQ + Foundry IQ + Work IQ</dd></div>
             <div className="status-row"><dt>Controls</dt><dd className="chip chip-success">Active</dd></div>

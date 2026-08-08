@@ -76,7 +76,7 @@ describe('Bank Servicing Agent shell', () => {
 
     expect(screen.getByRole('button', { name: 'Talk with Avatar' })).toBeInTheDocument()
     expect(screen.getByLabelText('Avatar tone')).toHaveValue('professional')
-    expect(screen.getByText('Meet Amara')).toBeInTheDocument()
+    expect(screen.getByText('Meet the Avatar')).toBeInTheDocument()
     expect(screen.getByText('Alloy Multilingual')).toBeInTheDocument()
   })
 

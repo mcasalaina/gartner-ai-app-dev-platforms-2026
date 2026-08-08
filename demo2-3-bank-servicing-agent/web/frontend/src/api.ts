@@ -1,4 +1,5 @@
 import type {
+  AvatarTone,
   ChatResponse,
   DemoMode,
   ModelComparison,
@@ -57,14 +58,14 @@ export function sendMessage(
 
 export function createVoiceSession(
   token: string,
-  mode: DemoMode,
+  tone: AvatarTone,
 ): Promise<VoiceSession> {
   return request<VoiceHandleResponse>('/api/voice/handles', token, {
     method: 'POST',
     headers: {
-      'x-client-demo-mode': mode,
+      'x-client-demo-mode': 'avatar_marketing',
     },
-    body: JSON.stringify({ clientContext: 'web' }),
+    body: JSON.stringify({ clientContext: 'web', tone }),
   }).then((response) => ({
     handle: response.sessionHandle,
     agentSessionId: response.agentSessionId,

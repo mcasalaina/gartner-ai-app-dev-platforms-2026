@@ -45,6 +45,19 @@ def test_bridge_rejects_legacy_demo_mode_header(client) -> None:
     assert response.json()["error"]["code"] == "invalid_demo_mode"
 
 
+def test_bridge_allows_avatar_marketing_mode(client) -> None:
+    test_client, _broker, foundry = client
+
+    response = test_client.post(
+        "/api/respond",
+        headers={"x-client-demo-mode": "avatar_marketing"},
+        json={"conversationId": "conv-avatar", "message": "Compare account options."},
+    )
+
+    assert response.status_code == 200
+    assert foundry.calls[0]["headers"] == {"x-client-demo-mode": "avatar_marketing"}
+
+
 @pytest.mark.asyncio
 async def test_failed_foundry_turn_is_removed_from_conversation_history() -> None:
     class Broker:

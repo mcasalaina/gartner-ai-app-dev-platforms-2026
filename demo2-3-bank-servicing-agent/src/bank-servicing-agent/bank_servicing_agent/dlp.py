@@ -20,6 +20,13 @@ _PATTERNS = (
     r"\bhourly wage\b",
     r"\bbase pay\b",
     r"\bbonus\b",
+    r"\bsalario\b",
+    r"\bsueldo\b",
+    r"\bcompensaci[oó]n\b",
+    r"\bn[oó]mina\b",
+    r"\bbono\b",
+    r"\bpago base\b",
+    r"\bsalario por hora\b",
 )
 _SENSITIVE_OUTPUT_PATTERNS = (
     (
@@ -41,6 +48,21 @@ _SENSITIVE_OUTPUT_PATTERNS = (
         "salary_amount_with_term",
         r"(?:\$\s?\d|\b\d+(?:[,.]\d+)*(?:\s?(?:usd|dollars|per\s+(?:hour|year)))?).{0,40}"
         r"\b(?:salary|compensation|payroll|paystub|w-?2|1099|hourly wage|base pay|bonus)\b",
+    ),
+    (
+        "spanish_subject_salary_reference",
+        r"\b(?:tu|su|del cliente|del solicitante|del empleado)\s+"
+        r"(?:salario|sueldo|compensaci[oó]n|n[oó]mina|bono|pago base)\b",
+    ),
+    (
+        "spanish_salary_term_with_amount",
+        r"\b(?:salario|sueldo|compensaci[oó]n|n[oó]mina|bono|pago base)\b"
+        r".{0,40}(?:\$\s?\d|\b\d+(?:[,.]\d+)*(?:\s?(?:usd|d[oó]lares))?)",
+    ),
+    (
+        "spanish_salary_amount_with_term",
+        r"(?:\$\s?\d|\b\d+(?:[,.]\d+)*(?:\s?(?:usd|d[oó]lares))?).{0,40}"
+        r"\b(?:salario|sueldo|compensaci[oó]n|n[oó]mina|bono|pago base)\b",
     ),
 )
 

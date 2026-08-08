@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 from bank_servicing_agent.dlp import evaluate_salary_output_dlp
 from bank_servicing_agent.kyc_state import SyntheticKycState, find_confirmation_safety_issues
+from bank_servicing_agent.language import avatar_section_headings
 from bank_servicing_agent.modes import DemoMode
 
 
@@ -33,10 +34,16 @@ _REQUIRED_HEADINGS = {
         "## Safety Checks",
         "## Recommended Next Step",
     ),
+    DemoMode.AVATAR_MARKETING: (
+        "## Service Summary",
+        "## Evidence",
+        "## Recommended Next Step",
+    ),
 }
 _WORD_LIMITS = {
     DemoMode.SERVICE_DISCOVERY: 220,
     DemoMode.CUSTOMER_SERVICING: 260,
+    DemoMode.AVATAR_MARKETING: 180,
 }
 _CITATION_PATTERN = re.compile(r"\[[A-Z][A-Z0-9:-]*\]")
 _INTERNAL_CONTEXT_PATTERN = re.compile(r"\b(?:demo|synthetic)\b", re.IGNORECASE)
@@ -58,7 +65,12 @@ def evaluate_response_quality(
                 detail=f"Response exceeded {_WORD_LIMITS[mode]} words.",
             )
         )
-    for heading in _REQUIRED_HEADINGS[mode]:
+    required_headings = (
+        avatar_section_headings(user_text)
+        if mode is DemoMode.AVATAR_MARKETING
+        else _REQUIRED_HEADINGS[mode]
+    )
+    for heading in required_headings:
         if heading not in response_text:
             issues.append(
                 QualityIssue(
@@ -116,12 +128,27 @@ def evaluate_response_quality(
 
 
 def _is_relevant(user_text: str, response_text: str, mode: DemoMode) -> bool:
-    request_tokens = {token for token in re.findall(r"[a-z0-9]+", user_text.lower()) if len(token) > 3}
-    response_tokens = set(re.findall(r"[a-z0-9]+", response_text.lower()))
+    request_tokens = {
+        token for token in re.findall(r"\w+", user_text.casefold(), re.UNICODE) if len(token) > 3
+    }
+    response_tokens = set(re.findall(r"\w+", response_text.casefold(), re.UNICODE))
     if request_tokens & response_tokens:
         return True
     mode_terms = {
         DemoMode.SERVICE_DISCOVERY: {"service", "product", "branch", "account", "loan", "card"},
         DemoMode.CUSTOMER_SERVICING: {"request", "safety", "next", "account", "kyc", "application"},
+        DemoMode.AVATAR_MARKETING: {
+            "service",
+            "product",
+            "guidance",
+            "account",
+            "customer",
+            "banking",
+            "servicio",
+            "producto",
+            "cuenta",
+            "cliente",
+            "banco",
+        },
     }
     return bool(mode_terms[mode] & response_tokens)

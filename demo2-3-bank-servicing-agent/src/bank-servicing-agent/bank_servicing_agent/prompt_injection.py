@@ -12,10 +12,26 @@ class PromptInjectionMarker:
 
 
 _MARKERS: tuple[tuple[str, str, str], ...] = (
-    ("override_instructions", r"ignore (all|the|previous|prior) (instructions|system prompt)", "high"),
-    ("reveal_hidden_prompt", r"(reveal|print|dump).*(system prompt|hidden instructions|developer message)", "high"),
+    (
+        "override_instructions",
+        r"ignore (all|the|previous|prior) (instructions|system prompt)|"
+        r"ignora (todas |las |cualquier )?(instrucciones|indicaciones)",
+        "high",
+    ),
+    (
+        "reveal_hidden_prompt",
+        r"(reveal|print|dump).*(system prompt|hidden instructions|developer message)|"
+        r"(revela|muestra|imprime).*(prompt del sistema|instrucciones ocultas|"
+        r"mensaje del desarrollador)",
+        "high",
+    ),
     ("mode_tampering", r"x-client-demo-mode|switch .* mode|change .* mode", "high"),
-    ("credential_exfiltration", r"(bearer token|authorization header|api key|call-id)", "high"),
+    (
+        "credential_exfiltration",
+        r"(bearer token|authorization header|api key|call-id|token de acceso|"
+        r"encabezado de autorizaci[oó]n|clave de api)",
+        "high",
+    ),
     ("tool_schema_exfiltration", r"(tool schema|tool json|list your hidden tools)", "medium"),
 )
 

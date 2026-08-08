@@ -54,6 +54,7 @@ class CompatibilityChatRequest(BaseModel):
 class VoiceHandleRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     client_context: str = Field(alias="clientContext")
+    tone: Literal["professional", "warm", "energetic"] = "professional"
 
 
 class LegacyFeedbackRequest(BaseModel):
@@ -226,6 +227,11 @@ def create_app(
             "allowedDemoModes": list(current.demo_modes),
             "voice": {
                 "enabled": True,
+                "avatar": {
+                    "enabled": current.voice.avatar_enabled,
+                    "character": current.voice.avatar_character,
+                    "model": current.voice.avatar_model,
+                },
                 "handlePath": "/api/voice/handles",
                 "websocketPath": "/api/voice/live",
                 "authMessage": {"type": "auth", "sessionHandle": "<handle>"},
@@ -322,6 +328,7 @@ def create_app(
             principal,
             user_assertion=principal.token,
             forward_headers=forward_headers,
+            tone=body.tone,
         )
         services.request_metrics.voice_handle_count += 1
         return JSONResponse(
@@ -539,6 +546,10 @@ async def _relay_voice(browser: WebSocket, upstream: Any) -> None:
                 if message_type == "websocket.receive":
                     if message.get("bytes") is not None:
                         await upstream.send_json(_voice_live_audio_event(message["bytes"]))
+                    elif message.get("text") is not None:
+                        await upstream.send_json(
+                            _voice_live_control_event(json.loads(message["text"]))
+                        )
                 elif message_type == "websocket.disconnect":
                     return
         except WebSocketDisconnect:
@@ -587,12 +598,33 @@ def _voice_live_audio_event(audio: bytes) -> dict[str, str]:
 
 def _browser_voice_frame(
     payload: Any,
-) -> tuple[Literal["json", "bytes"], dict[str, str] | bytes] | None:
+) -> tuple[Literal["json", "bytes"], dict[str, Any] | bytes] | None:
     if not isinstance(payload, dict):
         raise BackendError("Voice Live returned an invalid control event")
     event_type = payload.get("type")
     if event_type == "session.updated":
-        return ("json", {"type": "ready"})
+        session = payload.get("session")
+        avatar = session.get("avatar") if isinstance(session, dict) else None
+        ice_servers = avatar.get("ice_servers") if isinstance(avatar, dict) else []
+        if not isinstance(ice_servers, list):
+            raise BackendError("Voice Live returned invalid avatar ICE configuration")
+        return (
+            "json",
+            {
+                "type": "ready",
+                "avatarEnabled": isinstance(avatar, dict),
+                "iceServers": ice_servers,
+            },
+        )
+    if event_type == "session.avatar.connecting":
+        server_sdp = payload.get("server_sdp")
+        if not isinstance(server_sdp, str) or not server_sdp:
+            raise BackendError("Voice Live returned an invalid avatar answer")
+        return ("json", {"type": "avatar_answer", "serverSdp": server_sdp})
+    if event_type == "response.created":
+        return ("json", {"type": "state", "state": "speaking"})
+    if event_type == "response.done":
+        return ("json", {"type": "state", "state": "listening"})
     if event_type == "response.audio.delta":
         encoded = payload.get("delta")
         if not isinstance(encoded, str):
@@ -620,6 +652,15 @@ def _browser_voice_frame(
             },
         )
     return None
+
+
+def _voice_live_control_event(payload: Any) -> dict[str, str]:
+    if not isinstance(payload, dict) or payload.get("type") != "avatar_connect":
+        raise BackendError("The browser sent an invalid voice control event")
+    client_sdp = payload.get("clientSdp")
+    if not isinstance(client_sdp, str) or not client_sdp:
+        raise BackendError("The avatar connection request is missing client SDP")
+    return {"type": "session.avatar.connect", "client_sdp": client_sdp}
 
 
 def _parse_voice_auth_frame(payload: Any) -> str:

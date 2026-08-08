@@ -1,11 +1,18 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
 const mocks = vi.hoisted(() => ({
   account: null as { name: string; username: string } | null,
+  createVoiceSession: vi.fn(),
   getAccessToken: vi.fn(),
   sendMessage: vi.fn(),
+  voiceCallbacks: null as {
+    onState: (state: string) => void
+    onTranscript: (role: 'user' | 'assistant', text: string) => void
+    onAvatarStream: (stream: MediaStream) => void
+    onError: (message: string) => void
+  } | null,
 }))
 
 vi.mock('./auth/authContext', () => ({
@@ -23,12 +30,23 @@ vi.mock('./auth/authContext', () => ({
 
 vi.mock('./api', () => ({
   compareModels: vi.fn(),
-  createVoiceSession: vi.fn(),
+  createVoiceSession: mocks.createVoiceSession,
   decideReview: vi.fn(),
   getMetrics: vi.fn(),
   getReviewQueue: vi.fn(),
   sendMessage: mocks.sendMessage,
   submitFeedback: vi.fn(),
+}))
+
+vi.mock('./voice', () => ({
+  VoiceCall: class {
+    constructor(callbacks: NonNullable<typeof mocks.voiceCallbacks>) {
+      mocks.voiceCallbacks = callbacks
+    }
+
+    connect = vi.fn().mockResolvedValue(undefined)
+    close = vi.fn()
+  },
 }))
 
 describe('Bank Servicing Agent shell', () => {
@@ -38,6 +56,7 @@ describe('Bank Servicing Agent shell', () => {
 
   beforeEach(() => {
     mocks.account = null
+    mocks.voiceCallbacks = null
     vi.clearAllMocks()
   })
 
@@ -46,6 +65,59 @@ describe('Bank Servicing Agent shell', () => {
     expect(screen.getByRole('heading', { name: /banking answers with evidence/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in to continue/i })).toBeInTheDocument()
     expect(screen.queryByLabelText(/workspace mode/i)).not.toBeInTheDocument()
+  })
+
+  it('offers the standard multilingual talking avatar after sign-in', () => {
+    mocks.account = { name: 'Marco', username: 'marco@example.com' }
+
+    render(<App />)
+
+    expect(screen.getByRole('button', { name: 'Talk with Avatar' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Avatar tone')).toHaveValue('professional')
+    expect(screen.getByText('Amara is ready')).toBeInTheDocument()
+    expect(screen.getByText('Ava Multilingual')).toBeInTheDocument()
+  })
+
+  it('applies the selected tone and navigates only from finalized user speech', async () => {
+    mocks.account = { name: 'Marco', username: 'marco@example.com' }
+    mocks.getAccessToken.mockResolvedValue('access-token')
+    mocks.createVoiceSession.mockResolvedValue({
+      handle: 'opaque-handle',
+      websocketUrl: 'wss://bank.example/api/voice/live',
+      expiresAt: '2026-08-04T20:02:00Z',
+    })
+
+    render(<App />)
+    fireEvent.change(screen.getByLabelText('Avatar tone'), { target: { value: 'warm' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Talk with Avatar' }))
+
+    await vi.waitFor(() => {
+      expect(mocks.createVoiceSession).toHaveBeenCalledWith('access-token', 'warm')
+    })
+    await vi.waitFor(() => expect(mocks.voiceCallbacks).not.toBeNull())
+    act(() => {
+      mocks.voiceCallbacks?.onTranscript('assistant', 'You can verify your identity here.')
+    })
+    expect(screen.getByRole('button', { name: 'Customer servicing' })).not.toHaveClass('mode-tab-active')
+
+    act(() => {
+      mocks.voiceCallbacks?.onTranscript('user', 'Quiero verificar mi identidad.')
+    })
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Avatar opened Customer servicing for this topic.',
+    )
+    expect(screen.getByRole('button', { name: 'Customer servicing' })).toHaveClass('mode-tab-active')
+    expect(screen.getByText('Quiero verificar mi identidad.')).toBeInTheDocument()
+
+    act(() => {
+      mocks.voiceCallbacks?.onTranscript('user', 'Take me back to compare banking products.')
+    })
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Avatar opened Explore services for this topic.',
+    )
+    expect(screen.getByRole('button', { name: 'Explore services' })).toHaveClass('mode-tab-active')
+    expect(screen.getByText('Quiero verificar mi identidad.')).toBeInTheDocument()
+    expect(screen.getByText('Take me back to compare banking products.')).toBeInTheDocument()
   })
 
   it('shows the grounding services used by an assistant response', async () => {

@@ -14,7 +14,7 @@ from .identity import AgentUserTokenValidator, LoopbackTokenBroker
 from .telemetry import configure_telemetry
 
 logger = logging.getLogger(__name__)
-_ALLOWED_DEMO_MODES = {"service_discovery", "customer_servicing"}
+_ALLOWED_DEMO_MODES = {"service_discovery", "customer_servicing", "avatar_marketing"}
 
 
 class RespondRequest(BaseModel):

@@ -1,23 +1,25 @@
 # Bank Servicing Agent presenter runbook
 
-This runbook covers Gartner Demos 2 and 3 as two modes of the same Microsoft
-Foundry hosted agent. Use synthetic identities and records only.
+This runbook covers Gartner Demos 2 through 4 as three trusted modes of the same
+Microsoft Foundry hosted agent. Use synthetic identities and records only.
 
 ## Preflight
 
 1. Confirm the deployed agent is `bank-servicing-agent` in
-   `4iq-foundry-project`, the active version is 6, and production resolves to
-   `gpt-5.4-mini`.
-2. Confirm the web API revision uses backend image `20260804.5` and the
-   frontend revision uses image `20260804.7`.
+   `4iq-foundry-project` and production resolves to `gpt-5.4-mini`.
+2. Confirm the frontend and backend are on the intended presentation revisions.
 3. Confirm the presenter has `BankServicing.Access`. Use
    `BankServicing.ContentReviewer` for review and `BankServicing.Admin` for the
    model comparison lab.
-4. Confirm Voice Live is configured with
-   `en-US-Davis:DragonHDLatestNeural`.
-5. Run the Foundry smoke suite and the ASSERT smoke validation. Stop if a hard
+4. Confirm Voice Live is in East US 2 and configured with the standard Amara
+   photo avatar, `vasa-1`, `en-US-AvaMultilingualNeural`, multilingual semantic
+   VAD, and WebRTC output.
+5. In the presentation browser, allow microphone access and confirm Amara video,
+   synchronized audio, and live transcripts. Custom photo-avatar and personal
+   voice approvals are not required for this flow.
+6. Run the Foundry smoke suite and the ASSERT smoke validation. Stop if a hard
    gate or trace-completeness gate fails.
-6. Keep the existing `acme-bank-servicing-agent` and legacy Agent 365 bridge
+7. Keep the existing `acme-bank-servicing-agent` and legacy Agent 365 bridge
    revision available for rollback.
 
 The presenter sign-in uses a same-window redirect, not a popup. MSAL stores
@@ -31,8 +33,8 @@ presenter tab clears that state.
 - Same-conversation follow-ups retain context.
 - Salary DLP, non-bank refusal, and the next valid banking turn remain
   independent; a blocked turn does not poison later turns.
-- Voice Live uses a backend-issued, single-use handle. A live spoken-input test
-  returned both Azure Speech transcription and Davis audio.
+- Voice Live uses a backend-issued, single-use handle. Avatar signaling, OBO
+  credentials, and reusable Voice Live credentials stay behind the backend.
 - Hosted-agent calls have a bounded 90-second upstream timeout.
 - Agent 365 standalone cutover validation is separate from this OBO baseline.
 
@@ -43,8 +45,8 @@ presenter tab clears that state.
 2. Sign in and select **Explore services**.
 3. Ask for a detailed service recommendation. Point out citations to the
    separate Demo 1 service corpus and approved content version.
-4. Start **Talk with Davis**, ask a follow-up, interrupt once, and show the live
-   transcript.
+4. Use text chat for the service follow-up and show that the answer remains
+   grounded in the approved content path.
 5. Show an approved service image or generate a proposed image. Explain that
    generated media is not published until review.
 6. Open **Quality & review** as a reviewer, approve or reject the pending
@@ -61,6 +63,33 @@ presenter tab clears that state.
 5. Enter a salary/payroll probe and show the content-free DLP event with no
    downstream data call.
 6. Attempt a hidden-prompt or cross-user request and show the hard-gate refusal.
+
+## Demo 4: multilingual talking avatar
+
+1. Select **Explore services**, set the tone to **Professional**, and start
+   **Talk with Avatar**. Show Amara moving from Connecting to Listening.
+2. Ask in English: “Compare checking and savings services and explain the main
+   benefit of each.” Point out the synchronized video, Ava multilingual voice,
+   live transcript, and grounded banking answer.
+3. Set the tone to **Warm** and ask in Spanish: “Quiero abrir una cuenta. ¿Cómo
+   verifico mi identidad?” Show the same avatar answering in Spanish and the
+   visible workspace automatically moving to **Customer servicing** with a
+   navigation notice.
+4. Set the tone to **Energetic** and ask: “Take me back to compare your banking
+   products.” Show the allowlisted move to **Explore services**. Explain that
+   navigation can only select the two existing banking workspaces and cannot
+   execute a transaction.
+5. Ask for the approved service imagery used by the recommendation and point out
+   that it follows the existing Demo 2 content and review path.
+6. Ask an unrelated question, then a salary or hidden-prompt request. Show that
+   the same domain, DLP, prompt-injection, and cross-user controls still apply
+   before tools.
+7. End the call and show that microphone, avatar stream, peer connection, and
+   audio resources are released while text chat remains available.
+
+If avatar WebRTC cannot connect, end the call and continue with text chat. Do not
+switch to a custom avatar or personal voice unless the corresponding
+limited-access approvals have been confirmed for this subscription.
 
 ## Quality, A/B, and feedback
 

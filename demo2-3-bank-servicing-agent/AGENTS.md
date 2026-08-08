@@ -1,6 +1,6 @@
 # Coding Agent Instructions
 
-This folder implements Gartner Demos 2 and 3 as one Microsoft Foundry hosted
+This folder implements Gartner Demos 2 through 4 as one Microsoft Foundry hosted
 agent and authenticated web application.
 
 ## Requirements
@@ -13,7 +13,8 @@ agent and authenticated web application.
 - Require Microsoft Entra authentication before any agent interaction.
 - Preserve caller identity through `x-agent-foundry-call-id`; never forward or
   log bearer tokens.
-- Use `en-US-Davis:DragonHDLatestNeural` for Voice Live.
+- Use the standard Amara photo avatar with `en-US-AvaMultilingualNeural` for
+  Voice Live until custom photo avatar and personal voice access is approved.
 - Treat rubric evaluators and Agent Optimizer as preview and ASSERT as beta.
 - Use only synthetic customer and KYC data.
 - Never weaken bank-domain, salary-DLP, cross-user isolation, or explicit

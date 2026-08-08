@@ -30,6 +30,21 @@ _GENERAL_BANK_TERMS = {
     "overdraft",
     "kyc",
     "service",
+    "banco",
+    "banca",
+    "cuenta",
+    "cheques",
+    "ahorros",
+    "préstamo",
+    "tarjeta",
+    "sucursal",
+    "hipoteca",
+    "depósito",
+    "inversión",
+    "transferencia",
+    "comisión",
+    "sobregiro",
+    "servicio",
 }
 _SERVICE_DISCOVERY_TERMS = {
     "service",
@@ -40,6 +55,15 @@ _SERVICE_DISCOVERY_TERMS = {
     "rates",
     "features",
     "offerings",
+    "servicio",
+    "producto",
+    "comparar",
+    "sucursal",
+    "horario",
+    "tasas",
+    "características",
+    "opciones",
+    "beneficios",
 }
 _CUSTOMER_SERVICING_TERMS = {
     "open",
@@ -53,20 +77,32 @@ _CUSTOMER_SERVICING_TERMS = {
     "statement",
     "card",
     "wire",
+    "abrir",
+    "solicitud",
+    "identidad",
+    "verificar",
+    "disputa",
+    "comisión",
+    "dirección",
+    "estado",
+    "tarjeta",
+    "transferencia",
 }
 _BANK_DOMAIN_TERMS = (
     _GENERAL_BANK_TERMS | _SERVICE_DISCOVERY_TERMS | _CUSTOMER_SERVICING_TERMS
 )
 _CROSS_USER_PATTERN = re.compile(
     r"\b(another|different|other)\s+(customer|user|account holder)\b|"
-    r"\b(someone else|not my account)\b",
+    r"\b(someone else|not my account)\b|"
+    r"\b(otro|otra)\s+(cliente|usuario|cuenta)\b|"
+    r"\bcuenta\s+de\s+otra\s+persona\b",
     re.IGNORECASE,
 )
 
 
 
 def evaluate_bank_domain_request(mode: DemoMode, text: str) -> GuardDecision:
-    tokens = set(re.findall(r"[a-z0-9]+", text.lower()))
+    tokens = set(re.findall(r"\w+", text.casefold(), re.UNICODE))
     tokens.update(
         token[:-1] for token in tuple(tokens) if token.endswith("s") and len(token) > 3
     )
@@ -105,6 +141,12 @@ def evaluate_bank_domain_request(mode: DemoMode, text: str) -> GuardDecision:
             allowed=False,
             code="out_of_scope",
             message="Please ask about a servicing, KYC, or account-opening workflow.",
+        )
+    if mode is DemoMode.AVATAR_MARKETING and not tokens & _BANK_DOMAIN_TERMS:
+        return GuardDecision(
+            allowed=False,
+            code="out_of_scope",
+            message="Please ask about banking services or customer guidance.",
         )
     return GuardDecision(allowed=True, code="allowed", message="")
 

@@ -450,7 +450,112 @@
 }
 
 .voice-active {
+  color: var(--cp-success);
+}
+
+.avatar-stage {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: clamp(15rem, 34vw, 28rem);
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--cp-accent) 26%, transparent), transparent 42%),
+    var(--cp-panel-strong);
+  border-bottom: 0.0625rem solid var(--cp-border);
+}
+
+.avatar-stage video {
+  width: 100%;
+  max-height: 34rem;
+  object-fit: contain;
+  background: #080b12;
+}
+
+.avatar-placeholder {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  color: var(--cp-text);
+  text-align: center;
+}
+
+.avatar-placeholder > span {
+  display: grid;
+  width: 7rem;
+  height: 7rem;
+  margin-bottom: 0.75rem;
+  place-items: center;
+  border: 0.125rem solid var(--cp-accent);
+  border-radius: 50%;
+  background: var(--cp-accent-soft);
+  color: var(--cp-accent);
+  font-size: 3rem;
+  font-weight: 650;
+}
+
+.avatar-placeholder small {
+  margin-top: 0.25rem;
+  color: var(--cp-text-muted);
+}
+
+.avatar-stage-status {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  border: 0.0625rem solid color-mix(in srgb, var(--cp-text) 18%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cp-panel-strong) 88%, transparent);
+  color: var(--cp-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  backdrop-filter: blur(0.5rem);
+}
+
+.avatar-speaking .avatar-stage-status,
+.avatar-listening .avatar-stage-status {
+  color: var(--cp-success);
+}
+
+.avatar-failed .avatar-stage-status {
   color: var(--cp-danger);
+}
+
+.navigation-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  border-bottom: 0.0625rem solid var(--cp-accent);
+  background: var(--cp-accent-soft);
+  color: var(--cp-text);
+  font-size: 0.875rem;
+}
+
+.navigation-banner button {
+  border: 0;
+  background: transparent;
+  color: var(--cp-accent);
+  font-weight: 700;
+}
+
+.tone-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--cp-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.tone-control select {
+  min-height: 2.5rem;
+  padding: 0.375rem 2rem 0.375rem 0.625rem;
+  border: 0.0625rem solid var(--cp-border-strong);
+  border-radius: 0.625rem;
+  background: var(--cp-bg-elevated);
+  color: var(--cp-text);
 }
 
 .sidebar {
@@ -761,5 +866,9 @@
   .composer-actions {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .tone-control {
+    justify-content: space-between;
   }
 }

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from bank_servicing_agent.language import avatar_section_headings
 from bank_servicing_agent.modes import DemoMode
 from bank_servicing_agent.quality import QualityAssessment
 
@@ -33,6 +34,7 @@ def decide_repair(
     required_sections = {
         DemoMode.SERVICE_DISCOVERY: "## Service Summary\n## Evidence\n## Recommended Next Step",
         DemoMode.CUSTOMER_SERVICING: "## Request Assessment\n## Safety Checks\n## Recommended Next Step",
+        DemoMode.AVATAR_MARKETING: "\n".join(avatar_section_headings(user_text)),
     }[mode]
     prompt = (
         "Repair the previous answer so it complies with the runtime contract.\n\n"

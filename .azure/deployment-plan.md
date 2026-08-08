@@ -1,6 +1,6 @@
 # Azure Deployment Plan
 
-> **Status:** Demo 1 Validated; Demos 2/3 Validated
+> **Status:** Demo 1 Validated; Demos 2/3 Validated; Demo 4 Deployed
 
 Generated: 2026-08-01
 
@@ -167,7 +167,7 @@ regional model-capacity APIs.
 - **Scope:** All explicit role assignments are resource-scoped, not subscription
   or resource-group scoped.
 
-**Validated by:** azure-validate workflow  
+**Validated by:** azure-validate workflow
 **Validation status:** Complete. The plan is `Validated` for M365 Advocacy
 (new), West US.
 
@@ -344,3 +344,43 @@ the existing policy corpus is not overwritten.
 **Validated by:** `azure-validate` workflow
 **Validation completed:** 2026-08-04
 **Validation status:** Complete for `M365 Advocacy (new)` in East US 2.
+
+## 13. Gartner Demo 4 — Talking Avatar Validation
+
+Demo 4 extends the existing East US 2 Bank Servicing Agent deployment with the
+standard Amara photo avatar, Ava multilingual voice, trusted delivery tones,
+WebRTC media, and a read-only `avatar_marketing` mode.
+
+### Validation proof
+
+| Check | Command | Result | Timestamp |
+|---|---|---|---|
+| Azure authentication | `azd auth login --check-status` | Pass for the existing M365 Advocacy subscription | 2026-08-07 |
+| Subscription and region | `az account show`; live resource queries | Pass: `27b0139a-16b4-42bf-9ec9-c6db3768245e`, existing app environment in East US 2 | 2026-08-07 |
+| Hosted-agent schema | `azd ai agent doctor --output json` | Local schema, project endpoint, authentication, role, and environment checks pass; the newly recreated local AZD environment has no deployment tracking until this version is deployed | 2026-08-07 |
+| Hosted-agent package | `azd package bank-servicing-agent --no-prompt` | Pass | 2026-08-07 |
+| Frontend | `npm run typecheck && npm run lint && npm test && npm run build` | Pass: 9 tests and production Vite build | 2026-08-07 |
+| Python syntax and guards | `python3 -m compileall`; direct multilingual guard smoke checks | Pass; full pytest dependency restoration is blocked by organizational access policy for `files.pythonhosted.org` | 2026-08-07 |
+| Bicep | `az bicep build --file infra/main.bicep --stdout` | Pass | 2026-08-07 |
+| ARM validation | `az deployment group validate` with live non-secret values and structural secure placeholders | Pass | 2026-08-07 |
+| ARM what-if | `az deployment group what-if --result-format ResourceIdOnly` | Pass: 21 deploy, 31 ignore, 0 delete | 2026-08-07 |
+| Azure Policy | `az policy assignment list` | Pass: no subscription policy assignments | 2026-08-07 |
+| Static RBAC | Review of `main.bicep` and `acr-pull-role.bicep` | Pass: resource-scoped Blob Data Contributor, Key Vault Secrets User, and ACR Pull assignments remain unchanged | 2026-08-07 |
+
+**Validated by:** azure-validate workflow. **Validation status:** Demo 4 is
+`Validated` for M365 Advocacy (new), East US 2.
+
+### Deployment proof
+
+| Check | Result | Timestamp |
+|---|---|---|
+| Hosted agent | `bank-servicing-agent` version 34 active on Responses 2.0 | 2026-08-07 |
+| Frontend | `bank-servicing-frontend:20260807.1`, revision `bank-servicing-web--0000011`, healthy and receiving 100% traffic | 2026-08-07 |
+| Backend | `bank-servicing-backend:20260807.1`, revision `bank-servicing-api--0000009`, healthy and receiving 100% traffic | 2026-08-07 |
+| Runtime config | Five uncached probes returned `avatar_marketing`, Amara, `vasa-1`, and avatar enabled | 2026-08-07 |
+| Public frontend | HTTP 200 and deployed bundle contains `Talk with Avatar` and `Ava Multilingual` | 2026-08-07 |
+| Live RBAC | Frontend/backend/bridge retain ACR Pull; backend retains Storage Blob Data Contributor and Key Vault Secrets User; bridge retains Key Vault Secrets User | 2026-08-07 |
+
+**Live frontend:** `https://bank-servicing-web.agreeablewave-d7d8bc74.eastus2.azurecontainerapps.io`
+
+**Live API:** `https://bank-servicing-api.agreeablewave-d7d8bc74.eastus2.azurecontainerapps.io`

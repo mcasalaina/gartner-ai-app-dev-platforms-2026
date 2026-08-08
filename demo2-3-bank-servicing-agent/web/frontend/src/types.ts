@@ -1,6 +1,7 @@
 export type DemoMode = 'service_discovery' | 'customer_servicing'
 export type WorkspaceView = DemoMode | 'quality_admin'
 export type GroundingSource = 'Fabric IQ' | 'Foundry IQ' | 'Work IQ'
+export type AvatarTone = 'professional' | 'warm' | 'energetic'
 
 export interface Citation {
   id: string

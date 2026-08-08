@@ -50,7 +50,12 @@ class VoiceSettings:
     api_version: str
     project_name: str
     agent_name: str
+    voice_type: str
     voice_name: str
+    avatar_enabled: bool
+    avatar_character: str
+    avatar_model: str
+    avatar_customized: bool
     handle_ttl_seconds: int
 
     @property
@@ -81,7 +86,10 @@ class AppSettings:
         environment = os.getenv("APP_ENVIRONMENT", "development").strip() or "development"
         host = os.getenv("APP_HOST", "0.0.0.0")
         port = int(os.getenv("APP_PORT", "8080"))
-        demo_modes = _csv_env("ALLOWED_DEMO_MODES", default=("customer_servicing", "service_discovery"))
+        demo_modes = _csv_env(
+            "ALLOWED_DEMO_MODES",
+            default=("customer_servicing", "service_discovery", "avatar_marketing"),
+        )
         reviewer_roles = _csv_env("REVIEWER_ROLES")
         admin_roles = _csv_env("ADMIN_ROLES")
         if not reviewer_roles or not admin_roles:
@@ -118,7 +126,12 @@ class AppSettings:
             api_version=os.getenv("VOICE_LIVE_API_VERSION", "2026-04-10"),
             project_name=os.getenv("VOICE_LIVE_PROJECT_NAME", "4iq-foundry-project"),
             agent_name=os.getenv("VOICE_LIVE_AGENT_NAME", "bank-servicing-agent"),
-            voice_name=os.getenv("VOICE_LIVE_VOICE", "en-US-Davis:DragonHDLatestNeural"),
+            voice_type=os.getenv("VOICE_LIVE_VOICE_TYPE", "azure-standard"),
+            voice_name=os.getenv("VOICE_LIVE_VOICE", "en-US-AvaMultilingualNeural"),
+            avatar_enabled=_boolean_env("VOICE_LIVE_AVATAR_ENABLED", default=True),
+            avatar_character=os.getenv("VOICE_LIVE_AVATAR_CHARACTER", "amara"),
+            avatar_model=os.getenv("VOICE_LIVE_AVATAR_MODEL", "vasa-1"),
+            avatar_customized=_boolean_env("VOICE_LIVE_AVATAR_CUSTOMIZED", default=False),
             handle_ttl_seconds=int(os.getenv("VOICE_HANDLE_TTL_SECONDS", "120")),
         )
         _validate_url(foundry.project_endpoint, require_path=True)
@@ -160,3 +173,15 @@ def _validate_url(value: str, *, require_path: bool = False) -> None:
         raise ConfigurationError(f"Expected an https URL, got: {value}")
     if require_path and not parsed.path:
         raise ConfigurationError(f"Expected URL path to be present: {value}")
+
+
+def _boolean_env(name: str, *, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    normalized = value.strip().casefold()
+    if normalized in {"1", "true", "yes"}:
+        return True
+    if normalized in {"0", "false", "no"}:
+        return False
+    raise ConfigurationError(f"Expected {name} to be true or false")

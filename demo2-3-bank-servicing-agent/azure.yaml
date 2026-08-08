@@ -43,7 +43,17 @@ services:
             - name: VOICE_LIVE_PROJECT_NAME
               value: 4iq-foundry-project
             - name: VOICE_LIVE_VOICE
-              value: en-US-Davis:DragonHDLatestNeural
+              value: en-US-AvaMultilingualNeural
+            - name: VOICE_LIVE_VOICE_TYPE
+              value: azure-standard
+            - name: VOICE_LIVE_AVATAR_ENABLED
+              value: "true"
+            - name: VOICE_LIVE_AVATAR_CHARACTER
+              value: amara
+            - name: VOICE_LIVE_AVATAR_MODEL
+              value: vasa-1
+            - name: VOICE_LIVE_AVATAR_CUSTOMIZED
+              value: "false"
             - name: AGENT365_TENANT_ID
               value: ${AGENT365_TENANT_ID}
             - name: AGENT365_BLUEPRINT_CLIENT_ID

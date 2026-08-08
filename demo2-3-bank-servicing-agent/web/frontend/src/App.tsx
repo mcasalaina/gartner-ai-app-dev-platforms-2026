@@ -11,6 +11,7 @@ import {
 import { useAuth } from './auth/authContext'
 import { MarkdownMessage } from './MarkdownMessage'
 import type {
+  AvatarTone,
   ChatMessage,
   DemoMode,
   GroundingSource,
@@ -19,13 +20,13 @@ import type {
   ReviewDraft,
   WorkspaceView,
 } from './types'
-import { VoiceCall } from './voice'
+import { VoiceCall, type VoiceState } from './voice'
 import './App.css'
 
 const MODE_COPY: Record<DemoMode, { title: string; description: string; prompt: string }> = {
   service_discovery: {
     title: 'Explore bank services',
-    description: 'Grounded service guidance, cited research, approved images, and Davis voice.',
+    description: 'Grounded service guidance, cited research, approved images, and a multilingual avatar.',
     prompt: "Maria Garcia called about a $35 ATM fee on her checking account ending in 1013. Is the fee eligible for a refund, does anyone need to approve it, and have I received a recent message from Maria about the issue?",
   },
   customer_servicing: {
@@ -43,6 +44,14 @@ const INITIAL_METRICS: QualityMetrics = {
 }
 
 const GROUNDING_SOURCES: GroundingSource[] = ['Fabric IQ', 'Foundry IQ', 'Work IQ']
+const VOICE_STATE_LABELS: Record<'idle' | Exclude<VoiceState, 'ended'>, string> = {
+  idle: 'Avatar ready',
+  connecting: 'Avatar connecting',
+  listening: 'Avatar listening',
+  speaking: 'Avatar speaking',
+  reconnecting: 'Avatar reconnecting',
+  failed: 'Avatar unavailable',
+}
 type SourceActivityStatus = 'idle' | 'checking' | 'queried' | 'returned' | 'error'
 type SourceActivity = Record<GroundingSource, SourceActivityStatus>
 
@@ -93,6 +102,17 @@ function newMessage(role: ChatMessage['role'], content: string): ChatMessage {
   }
 }
 
+function avatarDestination(text: string): DemoMode | null {
+  const normalized = text.toLocaleLowerCase()
+  if (/\b(open|application|kyc|identity|verify|dispute|fee|statement|abrir|solicitud|identidad|verificar|disputa|tarifa|estado de cuenta)\b/.test(normalized)) {
+    return 'customer_servicing'
+  }
+  if (/\b(compare|service|product|rate|feature|offering|benefit|comparar|servicio|producto|tasa|opción|beneficio)\b/.test(normalized)) {
+    return 'service_discovery'
+  }
+  return null
+}
+
 function Header() {
   const { account, signIn, signOut, configurationError } = useAuth()
   const [error, setError] = useState<string | null>(null)
@@ -113,7 +133,7 @@ function Header() {
           <div className="brand-mark" aria-hidden="true">BS</div>
           <div>
             <p className="brand-name">Bank Servicing Agent</p>
-            <p className="brand-subtitle">Microsoft Foundry · Gartner Demos 2 and 3</p>
+            <p className="brand-subtitle">Microsoft Foundry · Gartner Demos 2 through 4</p>
           </div>
         </div>
         <div className="topbar-actions">
@@ -150,14 +170,15 @@ function Landing() {
         <p className="eyebrow">Secure, grounded banking assistance</p>
         <h1>Banking answers with evidence.</h1>
         <p className="landing-copy">
-          Discover services, hear account guidance in the Davis HD voice, and prepare a
-          checking account application. Sign-in is required before the agent can access
+          Discover services, speak with a photorealistic multilingual avatar, and prepare
+          a checking account application. Sign-in is required before the agent can access
           any experience or customer-scoped data.
         </p>
         <div className="chip-row">
           <span className="chip">gpt-5.4-mini</span>
           <span className="chip">Foundry IQ</span>
           <span className="chip">Voice Live</span>
+          <span className="chip">Photo avatar</span>
         </div>
       </section>
       <section className="capability-grid" aria-label="Capabilities">
@@ -173,6 +194,10 @@ function Landing() {
           <h2>Built-in controls</h2>
           <p>Bank-domain guardrails, salary DLP, quality gates, human review, and feedback.</p>
         </article>
+        <article className="capability-card">
+          <h2>Talking avatar</h2>
+          <p>Photorealistic, multilingual guidance with synchronized speech and safe menu navigation.</p>
+        </article>
       </section>
     </main>
   )
@@ -181,9 +206,11 @@ function Landing() {
 function ConversationWorkspace({
   mode,
   onSourceActivity,
+  onNavigate,
 }: {
   mode: DemoMode
   onSourceActivity: (activity: SourceActivity) => void
+  onNavigate: (destination: DemoMode) => void
 }) {
   const { getAccessToken } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -191,20 +218,26 @@ function ConversationWorkspace({
   const [draft, setDraft] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [voiceState, setVoiceState] = useState<'idle' | 'connecting' | 'connected'>('idle')
+  const [voiceState, setVoiceState] = useState<'idle' | Exclude<VoiceState, 'ended'>>('idle')
+  const [tone, setTone] = useState<AvatarTone>('professional')
+  const [navigationNotice, setNavigationNotice] = useState<string | null>(null)
   const voiceRef = useRef<VoiceCall | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const modeRef = useRef(mode)
+  modeRef.current = mode
   const copy = MODE_COPY[mode]
 
   useEffect(() => {
-    voiceRef.current?.close()
-    voiceRef.current = null
-    setVoiceState('idle')
-    setMessages([])
     setConversationId(undefined)
     setDraft('')
     setError(null)
     onSourceActivity(sourceActivity('idle'))
   }, [mode, onSourceActivity])
+
+  useEffect(() => () => {
+    voiceRef.current?.close()
+    voiceRef.current = null
+  }, [])
 
   async function submit(content: string) {
     const trimmed = content.trim()
@@ -239,11 +272,34 @@ function ConversationWorkspace({
     setError(null)
     try {
       const token = await getAccessToken()
-      const session = await createVoiceSession(token, mode)
+      const session = await createVoiceSession(token, tone)
       const call = new VoiceCall({
-        onState: (state) => setVoiceState(state === 'ended' ? 'idle' : state),
-        onTranscript: (role, text) =>
-          setMessages((current) => [...current, newMessage(role, text)]),
+        onState: (state) => {
+          setVoiceState(state === 'ended' ? 'idle' : state)
+          if (state === 'ended') {
+            voiceRef.current = null
+            if (videoRef.current) videoRef.current.srcObject = null
+          }
+        },
+        onTranscript: (role, text) => {
+          setMessages((current) => [...current, newMessage(role, text)])
+          if (role !== 'user') return
+          const destination = avatarDestination(text)
+          if (!destination || destination === modeRef.current) return
+          onNavigate(destination)
+          setNavigationNotice(
+            destination === 'service_discovery'
+              ? 'Avatar opened Explore services for this topic.'
+              : 'Avatar opened Customer servicing for this topic.',
+          )
+        },
+        onAvatarStream: (stream) => {
+          if (!videoRef.current) return
+          videoRef.current.srcObject = stream
+          void videoRef.current.play().catch(() => {
+            setError('Select play in the avatar window to start its audio and video.')
+          })
+        },
         onError: setError,
       })
       voiceRef.current = call
@@ -271,12 +327,35 @@ function ConversationWorkspace({
           <h2>{copy.title}</h2>
           <p>{copy.description}</p>
         </div>
-        <div className={`voice-status ${voiceState === 'connected' ? 'voice-active' : ''}`}>
+        <div className={`voice-status ${voiceState === 'listening' || voiceState === 'speaking' ? 'voice-active' : ''}`}>
           <span aria-hidden="true">●</span>
-          {voiceState === 'idle' ? 'Voice ready' : `Voice ${voiceState}`}
+          {VOICE_STATE_LABELS[voiceState]}
         </div>
       </div>
       {error && <div className="error-banner" role="alert">{error}</div>}
+      {navigationNotice && (
+        <div className="navigation-banner" role="status">
+          {navigationNotice}
+          <button type="button" onClick={() => setNavigationNotice(null)}>Dismiss</button>
+        </div>
+      )}
+      <div className={`avatar-stage avatar-${voiceState}`}>
+        <video
+          ref={videoRef}
+          autoPlay
+          controls={voiceState !== 'idle'}
+          playsInline
+          aria-label="Talking banking avatar"
+        />
+        {voiceState === 'idle' && (
+          <div className="avatar-placeholder">
+            <span aria-hidden="true">A</span>
+            <strong>Amara is ready</strong>
+            <small>Start a secure multilingual conversation</small>
+          </div>
+        )}
+        <div className="avatar-stage-status">{VOICE_STATE_LABELS[voiceState]}</div>
+      </div>
       <div className="conversation" aria-live="polite">
         {messages.length === 0 ? (
           <div className="empty-state">
@@ -340,12 +419,24 @@ function ConversationWorkspace({
           }}
         />
         <div className="composer-actions">
+          <label className="tone-control">
+            <span>Avatar tone</span>
+            <select
+              value={tone}
+              disabled={voiceState !== 'idle'}
+              onChange={(event) => setTone(event.target.value as AvatarTone)}
+            >
+              <option value="professional">Professional</option>
+              <option value="warm">Warm</option>
+              <option value="energetic">Energetic</option>
+            </select>
+          </label>
           <button
             className={`button ${voiceState === 'idle' ? '' : 'button-danger'}`}
             type="button"
             onClick={() => void toggleVoice()}
           >
-            {voiceState === 'idle' ? 'Talk with Davis' : 'End voice'}
+            {voiceState === 'idle' ? 'Talk with Avatar' : 'End avatar'}
           </button>
           <button className="button button-primary" type="button" disabled={busy || !draft.trim()} onClick={() => void submit(draft)}>
             {busy ? 'Checking sources…' : 'Send'}
@@ -549,7 +640,13 @@ function AuthenticatedWorkspace() {
         </nav>
         {view === 'quality_admin'
           ? <AdminWorkspace isAdmin={isAdmin} />
-          : <ConversationWorkspace mode={mode} onSourceActivity={setSourceActivityState} />}
+          : (
+            <ConversationWorkspace
+              mode={mode}
+              onSourceActivity={setSourceActivityState}
+              onNavigate={setView}
+            />
+          )}
       </div>
       <aside className="sidebar">
         <section className="panel">
@@ -565,7 +662,8 @@ function AuthenticatedWorkspace() {
           <h2>Runtime</h2>
           <dl className="status-list">
             <div className="status-row"><dt>Model</dt><dd>gpt-5.4-mini</dd></div>
-            <div className="status-row"><dt>Voice</dt><dd>Davis HD</dd></div>
+            <div className="status-row"><dt>Avatar</dt><dd>Amara</dd></div>
+            <div className="status-row"><dt>Voice</dt><dd>Ava Multilingual</dd></div>
             <div className="status-row"><dt>Grounding</dt><dd>Fabric IQ + Foundry IQ + Work IQ</dd></div>
             <div className="status-row"><dt>Controls</dt><dd className="chip chip-success">Active</dd></div>
           </dl>

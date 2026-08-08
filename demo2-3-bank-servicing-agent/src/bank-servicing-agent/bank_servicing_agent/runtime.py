@@ -21,7 +21,7 @@ from bank_servicing_agent.history import extract_conversation_turns, split_lates
 from bank_servicing_agent.instructions_loader import load_runtime_instructions
 from bank_servicing_agent.logging_utils import configure_logging
 from bank_servicing_agent.models import BankServicingRequest
-from bank_servicing_agent.modes import DemoModeError, resolve_demo_mode
+from bank_servicing_agent.modes import DemoModeError, resolve_avatar_tone, resolve_demo_mode
 from bank_servicing_agent.orchestrator import BankServicingOrchestrator
 
 
@@ -41,6 +41,7 @@ class BankServicingResponseHost(ResponsesAgentServerHost):
         del cancellation_signal
         try:
             mode = resolve_demo_mode(context.client_headers)
+            avatar_tone = resolve_avatar_tone(context.client_headers, mode)
         except DemoModeError as exc:
             self._logger.info(
                 "bank_request decision=invalid_mode call_id=%s user_id=%s",
@@ -59,6 +60,7 @@ class BankServicingResponseHost(ResponsesAgentServerHost):
         agent_request = BankServicingRequest(
             mode=mode,
             user_text=user_text,
+            avatar_tone=avatar_tone,
             history=history,
             conversation_id=context.conversation_id,
             call_id=context.platform_context.call_id,

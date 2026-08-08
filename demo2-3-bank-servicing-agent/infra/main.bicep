@@ -83,6 +83,24 @@ param foundryProjectEndpoint string = 'https://4iq-foundry-project-resource.serv
 @description('Voice Live account endpoint.')
 param voiceLiveEndpoint string = 'https://4iq-foundry-project-resource.services.ai.azure.com'
 
+@description('Voice Live voice implementation type.')
+param voiceLiveVoiceType string = 'azure-standard'
+
+@description('Voice Live multilingual voice name.')
+param voiceLiveVoice string = 'en-US-AvaMultilingualNeural'
+
+@description('Enable synchronized avatar output.')
+param voiceLiveAvatarEnabled bool = true
+
+@description('Standard or custom photo avatar character name.')
+param voiceLiveAvatarCharacter string = 'amara'
+
+@description('Photo avatar base model.')
+param voiceLiveAvatarModel string = 'vasa-1'
+
+@description('Whether the configured photo avatar is custom.')
+param voiceLiveAvatarCustomized bool = false
+
 @description('Allowed browser origin after frontend deployment. Empty uses the generated frontend URL.')
 param allowedBrowserOrigin string = ''
 
@@ -90,7 +108,7 @@ var token = uniqueString(subscription().id, resourceGroup().id, environmentName)
 var tags = {
   workload: 'bank-servicing-agent'
   environment: environmentName
-  demos: 'gartner-2-3'
+  demos: 'gartner-2-4'
 }
 var frontendIdentityName = 'id-bank-web-${token}'
 var backendIdentityName = 'id-bank-api-${token}'
@@ -484,7 +502,7 @@ resource backend 'Microsoft.App/containerApps@2024-03-01' = {
             }
             {
               name: 'ALLOWED_DEMO_MODES'
-              value: 'service_discovery,customer_servicing'
+              value: 'service_discovery,customer_servicing,avatar_marketing'
             }
             {
               name: 'FOUNDRY_PROJECT_ENDPOINT'
@@ -520,7 +538,27 @@ resource backend 'Microsoft.App/containerApps@2024-03-01' = {
             }
             {
               name: 'VOICE_LIVE_VOICE'
-              value: 'en-US-Davis:DragonHDLatestNeural'
+              value: voiceLiveVoice
+            }
+            {
+              name: 'VOICE_LIVE_VOICE_TYPE'
+              value: voiceLiveVoiceType
+            }
+            {
+              name: 'VOICE_LIVE_AVATAR_ENABLED'
+              value: string(voiceLiveAvatarEnabled)
+            }
+            {
+              name: 'VOICE_LIVE_AVATAR_CHARACTER'
+              value: voiceLiveAvatarCharacter
+            }
+            {
+              name: 'VOICE_LIVE_AVATAR_MODEL'
+              value: voiceLiveAvatarModel
+            }
+            {
+              name: 'VOICE_LIVE_AVATAR_CUSTOMIZED'
+              value: string(voiceLiveAvatarCustomized)
             }
             {
               name: 'CONTENT_STORAGE_ACCOUNT_URL'

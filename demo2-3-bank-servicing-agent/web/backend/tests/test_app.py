@@ -138,3 +138,49 @@ def test_voice_handle_endpoint_requires_valid_client_context(client) -> None:
 
     assert response.status_code == 401
     assert response.json()["error"]["code"] == "voice_handle_invalid"
+
+
+def test_voice_handle_accepts_trusted_avatar_mode_and_tone(client) -> None:
+    test_client, _foundry, _obo, _voice = client
+
+    response = test_client.post(
+        "/api/voice/handles",
+        headers={
+            "Authorization": "******",
+            "x-client-demo-mode": "avatar_marketing",
+        },
+        json={"clientContext": "web", "tone": "warm"},
+    )
+
+    assert response.status_code == 201
+    assert response.headers["cache-control"] == "no-store"
+    assert response.json()["sessionHandle"]
+
+
+def test_voice_handle_rejects_unknown_tone(client) -> None:
+    test_client, _foundry, _obo, _voice = client
+
+    response = test_client.post(
+        "/api/voice/handles",
+        headers={
+            "Authorization": "******",
+            "x-client-demo-mode": "avatar_marketing",
+        },
+        json={"clientContext": "web", "tone": "impersonate"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_app_config_describes_standard_avatar(client) -> None:
+    test_client, _foundry, _obo, _voice = client
+
+    response = test_client.get("/app-config")
+
+    assert response.status_code == 200
+    assert response.json()["voice"]["avatar"] == {
+        "enabled": True,
+        "character": "amara",
+        "model": "vasa-1",
+    }
+    assert "avatar_marketing" in response.json()["allowedDemoModes"]

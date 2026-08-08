@@ -100,7 +100,7 @@ def settings() -> AppSettings:
         environment="test",
         host="127.0.0.1",
         port=8080,
-        demo_modes=("customer_servicing", "service_discovery"),
+        demo_modes=("customer_servicing", "service_discovery", "avatar_marketing"),
         entra=EntraSettings(
             tenant_id="tenant-id",
             audience="api://bank-servicing",
@@ -125,7 +125,12 @@ def settings() -> AppSettings:
             api_version="2026-04-10",
             project_name="4iq-foundry-project",
             agent_name="bank-servicing-agent",
-            voice_name="en-US-Davis:DragonHDLatestNeural",
+            voice_type="azure-standard",
+            voice_name="en-US-AvaMultilingualNeural",
+            avatar_enabled=True,
+            avatar_character="amara",
+            avatar_model="vasa-1",
+            avatar_customized=False,
             handle_ttl_seconds=120,
         ),
     )

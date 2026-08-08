@@ -23,6 +23,22 @@ def test_quality_accepts_cited_service_discovery_response() -> None:
     assert assessment.passed is True
 
 
+def test_quality_accepts_cited_spanish_avatar_response() -> None:
+    assessment = evaluate_response_quality(
+        DemoMode.AVATAR_MARKETING,
+        "Quiero abrir una cuenta. ¿Cómo verifico mi identidad?",
+        "## Resumen del servicio\n"
+        "Puedo explicar el proceso de una cuenta sin enviar una solicitud. [P1]\n\n"
+        "## Evidencia\n"
+        "La política describe los pasos de verificación de identidad. [P1]\n\n"
+        "## Próximo paso recomendado\n"
+        "Revisa los documentos requeridos antes de continuar. [P1]",
+        SyntheticKycState(True, False, False),
+    )
+
+    assert assessment.passed is True
+
+
 def test_quality_rejects_unsafe_account_opening_claim() -> None:
     assessment = evaluate_response_quality(
         DemoMode.CUSTOMER_SERVICING,

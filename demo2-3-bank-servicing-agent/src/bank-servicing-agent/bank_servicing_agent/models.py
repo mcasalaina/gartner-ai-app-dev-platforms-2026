@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from bank_servicing_agent.modes import DemoMode
+from bank_servicing_agent.modes import AvatarTone, DemoMode
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +23,7 @@ class InstructionBundle:
 class BankServicingRequest:
     mode: DemoMode
     user_text: str
+    avatar_tone: AvatarTone = AvatarTone.PROFESSIONAL
     history: tuple[ConversationTurn, ...] = ()
     conversation_id: str | None = None
     call_id: str | None = None

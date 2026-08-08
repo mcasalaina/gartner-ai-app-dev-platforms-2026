@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from bank_servicing_agent.dlp import evaluate_salary_dlp, evaluate_salary_output_dlp
 from bank_servicing_agent.history import render_history
 from bank_servicing_agent.kyc_state import SyntheticKycState, derive_synthetic_kyc_state
+from bank_servicing_agent.language import avatar_section_headings
 from bank_servicing_agent.models import (
     BankServicingRequest,
     BankServicingResponse,
@@ -255,6 +256,12 @@ class BankServicingOrchestrator:
         return tuple(safe_turns)
 
     def _compose_system_instructions(self, request, injection_markers, kyc_state) -> str:
+        avatar_headings = "\n".join(avatar_section_headings(request.user_text))
+        avatar_delivery = {
+            "professional": "Use a concise, clear, professional delivery.",
+            "warm": "Use a concise, warm, reassuring delivery.",
+            "energetic": "Use a concise, upbeat, energetic delivery.",
+        }[request.avatar_tone.value]
         mode_rules = {
             "service_discovery": (
                 "Trusted runtime mode: service_discovery.\n"
@@ -271,6 +278,14 @@ class BankServicingOrchestrator:
                 "## Request Assessment\n"
                 "## Safety Checks\n"
                 "## Recommended Next Step"
+            ),
+            "avatar_marketing": (
+                "Trusted runtime mode: avatar_marketing.\n"
+                "Provide concise, read-only spoken guidance about approved banking "
+                "services and customer workflows. Answer in the language used by the "
+                "customer. Never perform or claim a transaction, submission, account "
+                f"change, fee reversal, or handoff. {avatar_delivery}\n"
+                f"Use this exact format:\n{avatar_headings}"
             ),
         }[request.mode.value]
         injection_codes = ", ".join(marker.code for marker in injection_markers) or "none"

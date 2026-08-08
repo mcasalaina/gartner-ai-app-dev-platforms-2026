@@ -8,7 +8,7 @@ from bank_servicing_agent.models import (
     GenerationResult,
     InstructionBundle,
 )
-from bank_servicing_agent.modes import DemoMode
+from bank_servicing_agent.modes import AvatarTone, DemoMode
 from bank_servicing_agent.orchestrator import BankServicingOrchestrator
 
 
@@ -32,6 +32,36 @@ class FakeBackend:
             }
         )
         return GenerationResult(text=self._responses.pop(0))
+
+
+def test_avatar_tone_and_spanish_format_are_applied_by_the_agent() -> None:
+    response_text = (
+        "## Resumen del servicio\n"
+        "Puedo explicar el proceso de una cuenta. [P1]\n\n"
+        "## Evidencia\n"
+        "La política describe la verificación de identidad. [P1]\n\n"
+        "## Próximo paso recomendado\n"
+        "Revisa los documentos requeridos. [P1]"
+    )
+    backend = FakeBackend([response_text, response_text])
+    orchestrator = BankServicingOrchestrator(
+        instructions=InstructionBundle(version="1.4.0", body="Base instructions."),
+        backend=backend,
+    )
+
+    asyncio.run(
+        orchestrator.handle(
+            BankServicingRequest(
+                mode=DemoMode.AVATAR_MARKETING,
+                avatar_tone=AvatarTone.WARM,
+                user_text="Quiero abrir una cuenta. ¿Cómo verifico mi identidad?",
+            )
+        )
+    )
+
+    system_instructions = str(backend.calls[0]["system_instructions"])
+    assert "warm, reassuring delivery" in system_instructions
+    assert "## Resumen del servicio" in system_instructions
 
 
 def test_orchestrator_repairs_once_for_missing_citation() -> None:

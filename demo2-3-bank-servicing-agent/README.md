@@ -1,6 +1,6 @@
 # Bank Servicing Agent
 
-Gartner Demos 2 and 3 use one Microsoft Foundry hosted agent in two
+Gartner Demos 2 through 4 use one Microsoft Foundry hosted agent in three
 system-controlled modes:
 
 - **Service discovery:** cited service information and images, generated service
@@ -9,6 +9,9 @@ system-controlled modes:
 - **Customer servicing:** account opening and KYC guidance, account
   and investment servicing, PDF-grounded RAG, bank guardrails, salary DLP, and
   quality/cost reporting.
+- **Avatar marketing:** read-only, multilingual service explanations through the
+  standard Amara photo avatar and Ava multilingual voice, with safe navigation
+  between the two existing banking workspaces.
 
 The web shell is public, but every API and voice session requires Microsoft
 Entra sign-in. The Agent 365 bridge uses the same hosted agent with its existing
@@ -19,8 +22,8 @@ The deployed OBO path uses same-window MSAL redirects with tab-scoped
 single-use Voice Live handles. The Voice Live proxy targets the Responses
 hosted-agent contract with API version `2026-04-10` and query parameters
 `agent-name` and `agent-project-name`; the classic `agent_id` and `project_id`
-parameters are not used. It translates browser PCM to Voice Live events without
-exposing the OBO token.
+parameters are not used. It translates browser PCM to Voice Live events and
+relays avatar WebRTC signaling without exposing the OBO token.
 
 ## Components
 
@@ -40,10 +43,12 @@ exposing the OBO token.
 - Endpoint:
   `https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project`
 - Production model: `gpt-5.4-mini`
-- Voice: `en-US-Davis:DragonHDLatestNeural`
-- Active hosted-agent version: `24`
-- Live frontend image: `bank-servicing-frontend:20260805.3`
-- Live backend image: `bank-servicing-backend:20260805.1`
+- Avatar: standard Amara photo avatar on `vasa-1`
+- Voice: `en-US-AvaMultilingualNeural`
+- Avatar region: East US 2
+- Active hosted-agent version: `34`
+- Live frontend image: `bank-servicing-frontend:20260807.1`
+- Live backend image: `bank-servicing-backend:20260807.1`
 - Live Agent 365 bridge image: `marcos-teller-bridge-a365:20260805.8`
 - Live Agent 365 bridge revision: `marcos-teller-bridge-a365--0000019`
 

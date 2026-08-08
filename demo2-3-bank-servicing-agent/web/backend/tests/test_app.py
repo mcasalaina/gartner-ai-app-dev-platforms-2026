@@ -178,6 +178,8 @@ def test_app_config_describes_standard_avatar(client) -> None:
     response = test_client.get("/app-config")
 
     assert response.status_code == 200
+    assert response.json()["voice"]["name"] == "en-US-AlloyTurboMultilingualNeural"
+    assert response.json()["voice"]["type"] == "azure-standard"
     assert response.json()["voice"]["avatar"] == {
         "enabled": True,
         "character": "amara",

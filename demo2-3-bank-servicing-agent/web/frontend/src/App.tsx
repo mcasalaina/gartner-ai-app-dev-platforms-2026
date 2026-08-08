@@ -219,6 +219,9 @@ function ConversationWorkspace({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [voiceState, setVoiceState] = useState<'idle' | Exclude<VoiceState, 'ended'>>('idle')
+  const [voiceMuted, setVoiceMuted] = useState(false)
+  const [hasAvatarStream, setHasAvatarStream] = useState(false)
+  const [mediaBlocked, setMediaBlocked] = useState(false)
   const [tone, setTone] = useState<AvatarTone>('professional')
   const [navigationNotice, setNavigationNotice] = useState<string | null>(null)
   const voiceRef = useRef<VoiceCall | null>(null)
@@ -244,41 +247,59 @@ function ConversationWorkspace({
     if (!trimmed || busy) return
     setBusy(true)
     setError(null)
-    onSourceActivity(sourceActivity('checking'))
-    const userMessage = newMessage('user', trimmed)
-    setMessages((current) => [...current, userMessage])
-    setDraft('')
+    let sourceRequestStarted = false
     try {
       const token = await getAccessToken()
+      sourceRequestStarted = true
+      onSourceActivity(sourceActivity('checking'))
+      setMessages((current) => [...current, newMessage('user', trimmed)])
+      setDraft('')
       const response = await sendMessage(token, mode, trimmed, conversationId)
       setConversationId(response.conversationId)
       setMessages((current) => [...current, response.message])
       onSourceActivity(sourceActivityFromMessage(response.message))
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'The request failed.')
-      onSourceActivity(sourceActivity('error'))
+      onSourceActivity(sourceActivity(sourceRequestStarted ? 'error' : 'idle'))
     } finally {
       setBusy(false)
     }
   }
 
-  async function toggleVoice() {
-    if (voiceRef.current) {
-      voiceRef.current.close()
-      voiceRef.current = null
-      setVoiceState('idle')
-      return
-    }
+  function clearVoiceMedia() {
+    setVoiceMuted(false)
+    setHasAvatarStream(false)
+    setMediaBlocked(false)
+    if (videoRef.current) videoRef.current.srcObject = null
+  }
+
+  function endVoice() {
+    voiceRef.current?.close()
+    voiceRef.current = null
+    clearVoiceMedia()
+    setVoiceState('idle')
+  }
+
+  function toggleMicrophone() {
+    const nextMuted = !voiceMuted
+    voiceRef.current?.setMuted(nextMuted)
+    setVoiceMuted(nextMuted)
+  }
+
+  async function startVoice() {
+    if (voiceRef.current || voiceState === 'connecting') return
     setError(null)
+    clearVoiceMedia()
+    setVoiceState('connecting')
     try {
       const token = await getAccessToken()
       const session = await createVoiceSession(token, tone)
       const call = new VoiceCall({
         onState: (state) => {
           setVoiceState(state === 'ended' ? 'idle' : state)
-          if (state === 'ended') {
+          if (state === 'ended' || state === 'failed') {
             voiceRef.current = null
-            if (videoRef.current) videoRef.current.srcObject = null
+            clearVoiceMedia()
           }
         },
         onTranscript: (role, text) => {
@@ -296,11 +317,15 @@ function ConversationWorkspace({
         onAvatarStream: (stream) => {
           if (!videoRef.current) return
           videoRef.current.srcObject = stream
+          setHasAvatarStream(true)
+          setMediaBlocked(false)
           void videoRef.current.play().catch(() => {
-            setError('Select play in the avatar window to start its audio and video.')
+            setMediaBlocked(true)
           })
         },
-        onError: setError,
+        onError: (message) => {
+          setError(message)
+        },
       })
       voiceRef.current = call
       await call.connect(session.websocketUrl, session.handle)
@@ -310,6 +335,17 @@ function ConversationWorkspace({
       setError(reason instanceof Error ? reason.message : 'Voice session failed.')
     }
   }
+
+  function resumeAvatarMedia() {
+    if (!videoRef.current) return
+    void videoRef.current.play().then(() => {
+      setMediaBlocked(false)
+    }).catch(() => {
+      setError('Your browser blocked avatar playback. Check this site\'s media permissions.')
+    })
+  }
+
+  const voiceActive = voiceState !== 'idle'
 
   async function recordFeedback(messageId: string, sentiment: 'positive' | 'negative') {
     try {
@@ -321,14 +357,14 @@ function ConversationWorkspace({
   }
 
   return (
-    <section className="panel">
+    <section className="panel conversation-panel">
       <div className="panel-header">
         <div>
           <h2>{copy.title}</h2>
           <p>{copy.description}</p>
         </div>
-        <div className={`voice-status ${voiceState === 'listening' || voiceState === 'speaking' ? 'voice-active' : ''}`}>
-          <span aria-hidden="true">●</span>
+        <div className={`voice-status voice-${voiceState} ${voiceState === 'listening' || voiceState === 'speaking' ? 'voice-active' : ''}`}>
+          <span className="status-dot" aria-hidden="true" />
           {VOICE_STATE_LABELS[voiceState]}
         </div>
       </div>
@@ -339,72 +375,115 @@ function ConversationWorkspace({
           <button type="button" onClick={() => setNavigationNotice(null)}>Dismiss</button>
         </div>
       )}
-      <div className={`avatar-stage avatar-${voiceState}`}>
-        <video
-          ref={videoRef}
-          autoPlay
-          controls={voiceState !== 'idle'}
-          playsInline
-          aria-label="Talking banking avatar"
-        />
-        {voiceState === 'idle' && (
-          <div className="avatar-placeholder">
-            <span aria-hidden="true">A</span>
-            <strong>Amara is ready</strong>
-            <small>Start a secure multilingual conversation</small>
-          </div>
-        )}
-        <div className="avatar-stage-status">{VOICE_STATE_LABELS[voiceState]}</div>
-      </div>
-      <div className="conversation" aria-live="polite">
-        {messages.length === 0 ? (
-          <div className="empty-state">
-            <h3>Start with a natural question</h3>
-            <p>{copy.prompt}</p>
-            <button className="button" type="button" onClick={() => void submit(copy.prompt)}>
-              Try this question
-            </button>
-          </div>
-        ) : (
-          messages.map((message) => (
-            <article
-              className={`message message-${message.role}`}
-              key={message.id}
-              aria-label={`${message.role} message`}
-            >
-              <div className="message-meta">
-                <strong>{message.role === 'assistant' ? 'Bank Servicing Agent' : 'You'}</strong>
-                <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
-              </div>
-              {message.role === 'assistant'
-                ? <MarkdownMessage content={message.content} />
-                : <p className="message-plain">{message.content}</p>}
-              {message.citations?.some((citation) => citation.url) ? (
-                <div className="reference-links" aria-label="Linked source documents">
-                  <span>Linked sources</span>
-                  {message.citations.filter((citation) => citation.url).map((citation) => (
-                    <a className="reference-link" href={citation.url} key={citation.id}>
-                      {citation.title}
-                    </a>
-                  ))}
-                </div>
-              ) : null}
-              {message.role === 'assistant' && (
-                <div className="button-row">
-                  <button className="button" type="button" onClick={() => void recordFeedback(message.id, 'positive')}>
-                    Helpful
-                  </button>
-                  <button className="button" type="button" onClick={() => void recordFeedback(message.id, 'negative')}>
-                    Needs work
-                  </button>
+      <div className={`conversation-body ${voiceActive ? 'conversation-body-avatar' : ''}`}>
+        {voiceActive && (
+          <section className={`avatar-session avatar-${voiceState}`} aria-label="Avatar call">
+            <div className="avatar-visual">
+              <video
+                ref={videoRef}
+                className={hasAvatarStream ? 'avatar-video avatar-video-visible' : 'avatar-video'}
+                autoPlay
+                playsInline
+                aria-label="Talking banking avatar"
+              />
+              {!hasAvatarStream && (
+                <div className="avatar-placeholder">
+                  <span aria-hidden="true">A</span>
+                  <strong>{voiceState === 'failed' ? 'Amara could not connect' : 'Preparing Amara'}</strong>
+                  <small>{VOICE_STATE_LABELS[voiceState]}</small>
                 </div>
               )}
-            </article>
-          ))
+            </div>
+            <div className="avatar-call-bar">
+              <div>
+                <span className="avatar-call-label">Live avatar</span>
+                <strong>{voiceMuted ? 'Microphone muted' : VOICE_STATE_LABELS[voiceState]}</strong>
+              </div>
+              <div className="avatar-call-actions">
+                {mediaBlocked && (
+                  <button className="button" type="button" onClick={resumeAvatarMedia}>
+                    Start media
+                  </button>
+                )}
+                {voiceState === 'failed' ? (
+                  <button className="button button-primary" type="button" onClick={() => void startVoice()}>
+                    Retry
+                  </button>
+                ) : (
+                  <button
+                    className={`button ${voiceMuted ? 'button-mute-active' : ''}`}
+                    type="button"
+                    aria-pressed={voiceMuted}
+                    onClick={toggleMicrophone}
+                  >
+                    {voiceMuted ? 'Unmute microphone' : 'Mute microphone'}
+                  </button>
+                )}
+                <button className="button button-danger" type="button" onClick={endVoice}>
+                  End avatar
+                </button>
+              </div>
+            </div>
+          </section>
         )}
+        <div className="conversation" aria-live="polite">
+          {messages.length === 0 ? (
+            <div className="empty-state">
+              <div className="avatar-intro">
+                <span className="avatar-monogram" aria-hidden="true">A</span>
+                <div>
+                  <strong>Meet Amara</strong>
+                  <p>Talk naturally in English or Spanish, or use text chat below.</p>
+                </div>
+              </div>
+              <p className="eyebrow">Suggested question</p>
+              <h3>Start with a natural question</h3>
+              <p className="suggested-question">{copy.prompt}</p>
+              <button className="button" type="button" onClick={() => void submit(copy.prompt)}>
+                Try this question
+              </button>
+            </div>
+          ) : (
+            messages.map((message) => (
+              <article
+                className={`message message-${message.role}`}
+                key={message.id}
+                aria-label={`${message.role} message`}
+              >
+                <div className="message-meta">
+                  <strong>{message.role === 'assistant' ? 'Bank Servicing Agent' : 'You'}</strong>
+                  <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
+                </div>
+                {message.role === 'assistant'
+                  ? <MarkdownMessage content={message.content} />
+                  : <p className="message-plain">{message.content}</p>}
+                {message.citations?.some((citation) => citation.url) ? (
+                  <div className="reference-links" aria-label="Linked source documents">
+                    <span>Linked sources</span>
+                    {message.citations.filter((citation) => citation.url).map((citation) => (
+                      <a className="reference-link" href={citation.url} key={citation.id}>
+                        {citation.title}
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+                {message.role === 'assistant' && (
+                  <div className="button-row">
+                    <button className="button button-quiet" type="button" onClick={() => void recordFeedback(message.id, 'positive')}>
+                      Helpful
+                    </button>
+                    <button className="button button-quiet" type="button" onClick={() => void recordFeedback(message.id, 'negative')}>
+                      Needs work
+                    </button>
+                  </div>
+                )}
+              </article>
+            ))
+          )}
+        </div>
       </div>
       <div className="composer">
-        <label htmlFor="message"><strong>Message</strong></label>
+        <label className="composer-label" htmlFor="message">Message the agent</label>
         <textarea
           id="message"
           value={draft}
@@ -419,25 +498,26 @@ function ConversationWorkspace({
           }}
         />
         <div className="composer-actions">
-          <label className="tone-control">
-            <span>Avatar tone</span>
-            <select
-              value={tone}
-              disabled={voiceState !== 'idle'}
-              onChange={(event) => setTone(event.target.value as AvatarTone)}
-            >
-              <option value="professional">Professional</option>
-              <option value="warm">Warm</option>
-              <option value="energetic">Energetic</option>
-            </select>
-          </label>
-          <button
-            className={`button ${voiceState === 'idle' ? '' : 'button-danger'}`}
-            type="button"
-            onClick={() => void toggleVoice()}
-          >
-            {voiceState === 'idle' ? 'Talk with Avatar' : 'End avatar'}
-          </button>
+          <div className="voice-launch-controls">
+            <label className="tone-control">
+              <span>Avatar tone</span>
+              <select
+                aria-label="Avatar tone"
+                value={tone}
+                disabled={voiceActive}
+                onChange={(event) => setTone(event.target.value as AvatarTone)}
+              >
+                <option value="professional">Professional</option>
+                <option value="warm">Warm</option>
+                <option value="energetic">Energetic</option>
+              </select>
+            </label>
+            {!voiceActive && (
+              <button className="button button-avatar" type="button" onClick={() => void startVoice()}>
+                Talk with Avatar
+              </button>
+            )}
+          </div>
           <button className="button button-primary" type="button" disabled={busy || !draft.trim()} onClick={() => void submit(draft)}>
             {busy ? 'Checking sources…' : 'Send'}
           </button>
@@ -663,7 +743,7 @@ function AuthenticatedWorkspace() {
           <dl className="status-list">
             <div className="status-row"><dt>Model</dt><dd>gpt-5.4-mini</dd></div>
             <div className="status-row"><dt>Avatar</dt><dd>Amara</dd></div>
-            <div className="status-row"><dt>Voice</dt><dd>Ava Multilingual</dd></div>
+            <div className="status-row"><dt>Voice</dt><dd>Alloy Multilingual</dd></div>
             <div className="status-row"><dt>Grounding</dt><dd>Fabric IQ + Foundry IQ + Work IQ</dd></div>
             <div className="status-row"><dt>Controls</dt><dd className="chip chip-success">Active</dd></div>
           </dl>

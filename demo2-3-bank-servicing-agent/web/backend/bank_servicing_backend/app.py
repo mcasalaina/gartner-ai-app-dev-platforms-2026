@@ -227,6 +227,8 @@ def create_app(
             "allowedDemoModes": list(current.demo_modes),
             "voice": {
                 "enabled": True,
+                "name": current.voice.voice_name,
+                "type": current.voice.voice_type,
                 "avatar": {
                     "enabled": current.voice.avatar_enabled,
                     "character": current.voice.avatar_character,

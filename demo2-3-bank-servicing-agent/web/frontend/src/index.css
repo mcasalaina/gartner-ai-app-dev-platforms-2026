@@ -1,23 +1,25 @@
 :root {
   color-scheme: light;
-  --cp-bg: #f7f4ef;
-  --cp-bg-elevated: #fcfbf8;
+  --cp-bg: #f3f1ee;
+  --cp-bg-elevated: #f8f7f5;
   --cp-surface: #ffffff;
-  --cp-surface-soft: #f5f5f5;
-  --cp-border: #dedede;
-  --cp-border-strong: #919191;
-  --cp-text: #242424;
-  --cp-text-muted: #5c5c5c;
-  --cp-text-soft: #6f6f6f;
-  --cp-accent: #b11f4b;
-  --cp-accent-hover: #9a1a41;
-  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-surface-soft: #f1f3f5;
+  --cp-border: #dfe2e6;
+  --cp-border-strong: #8b939e;
+  --cp-text: #18212b;
+  --cp-text-muted: #5a6470;
+  --cp-text-soft: #6b7480;
+  --cp-accent: #9d2348;
+  --cp-accent-hover: #821b3b;
+  --cp-accent-soft: rgba(157, 35, 72, 0.09);
   --cp-accent-fg: #ffffff;
-  --cp-success: #16a34a;
-  --cp-danger: #dc2626;
-  --cp-warning: #f59e0b;
+  --cp-success: #16803b;
+  --cp-danger: #c7352c;
+  --cp-warning: #ad6800;
   --cp-link: #0078d4;
-  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-shadow: 0 20px 60px rgba(24, 33, 43, 0.09);
+  --cp-shadow-soft: 0 8px 24px rgba(24, 33, 43, 0.07);
+  --cp-avatar-bg: #111923;
   --cp-overlay: rgba(255, 255, 255, 0.8);
   --cp-panel: rgba(255, 255, 255, 0.86);
   --cp-panel-strong: rgba(255, 255, 255, 0.96);
@@ -64,7 +66,9 @@ body {
   min-width: 20rem;
   min-height: 100vh;
   margin: 0;
-  background: var(--cp-bg);
+  background:
+    radial-gradient(circle at 15% -10%, rgba(157, 35, 72, 0.07), transparent 30rem),
+    var(--cp-bg);
   color: var(--cp-text);
   font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1rem;
@@ -96,4 +100,3 @@ a {
 #root {
   min-height: 100vh;
 }
-

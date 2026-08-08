@@ -1,4 +1,7 @@
 import {
+  BrowserAuthError,
+  BrowserAuthErrorCodes,
+  CacheLookupPolicy,
   InteractionRequiredAuthError,
   PublicClientApplication,
   type AccountInfo,
@@ -8,6 +11,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -22,10 +26,7 @@ const configurationError =
     ? null
     : 'Authentication is not configured. Set VITE_ENTRA_TENANT_ID, VITE_ENTRA_CLIENT_ID, and VITE_API_SCOPE.'
 
-const apiDefaultScope = apiScope
-  ? `${apiScope.slice(0, apiScope.lastIndexOf('/'))}/.default`
-  : ''
-const authRequest = { scopes: apiDefaultScope ? [apiDefaultScope] : [] }
+const authRequest = { scopes: apiScope ? [apiScope] : [] }
 const msal = new PublicClientApplication({
   auth: {
     clientId: clientId || '00000000-0000-0000-0000-000000000000',
@@ -46,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState<AccountInfo | null>(null)
   const [initializing, setInitializing] = useState(true)
   const [initializationError, setInitializationError] = useState<string | null>(null)
+  const tokenRequestRef = useRef<Promise<string> | null>(null)
 
   useEffect(() => {
     let active = true
@@ -55,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const redirectResult = await msal.handleRedirectPromise()
         const selected = redirectResult?.account ?? msal.getAllAccounts()[0] ?? null
         if (active) {
+          msal.setActiveAccount(selected)
           setAccount(selected)
         }
       } catch (reason) {
@@ -95,17 +98,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!account) {
       throw new Error('Sign in is required.')
     }
-    let result: AuthenticationResult
-    try {
-      result = await msal.acquireTokenSilent({ ...authRequest, account })
-    } catch (reason) {
-      if (!(reason instanceof InteractionRequiredAuthError)) {
-        throw reason
-      }
-      await msal.acquireTokenRedirect({ ...authRequest, account })
-      throw new Error('Redirecting to refresh your sign-in.')
+
+    if (tokenRequestRef.current) {
+      return tokenRequestRef.current
     }
-    return result.accessToken
+
+    const request = {
+      ...authRequest,
+      account,
+      loginHint: account.username,
+    }
+    const tokenRequest = (async () => {
+      let result: AuthenticationResult
+      try {
+        result = await msal.acquireTokenSilent({
+          ...request,
+          cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken,
+        })
+      } catch (reason) {
+        const timedOut = reason instanceof BrowserAuthError
+          && reason.errorCode === BrowserAuthErrorCodes.timedOut
+        if (!(reason instanceof InteractionRequiredAuthError) && !timedOut) {
+          throw reason
+        }
+        try {
+          result = await msal.acquireTokenPopup(request)
+        } catch {
+          throw new Error(
+            'Your Microsoft sign-in session needs attention. Complete the sign-in window, then try again.',
+          )
+        }
+      }
+
+      return result.accessToken
+    })()
+
+    tokenRequestRef.current = tokenRequest
+    try {
+      return await tokenRequest
+    } finally {
+      if (tokenRequestRef.current === tokenRequest) {
+        tokenRequestRef.current = null
+      }
+    }
   }, [account])
 
   const value = useMemo<AuthValue>(

@@ -126,7 +126,7 @@ def settings() -> AppSettings:
             project_name="4iq-foundry-project",
             agent_name="bank-servicing-agent",
             voice_type="azure-standard",
-            voice_name="en-US-AvaMultilingualNeural",
+            voice_name="en-US-AlloyTurboMultilingualNeural",
             avatar_enabled=True,
             avatar_character="amara",
             avatar_model="vasa-1",

@@ -5,21 +5,34 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   class MockInteractionRequiredAuthError extends Error {}
+  class MockBrowserAuthError extends Error {
+    readonly errorCode: string
+
+    constructor(errorCode: string) {
+      super(errorCode)
+      this.errorCode = errorCode
+    }
+  }
 
   return {
+    MockBrowserAuthError,
     MockInteractionRequiredAuthError,
     configuration: undefined as unknown,
     initialize: vi.fn(),
     handleRedirectPromise: vi.fn(),
     getAllAccounts: vi.fn(),
+    setActiveAccount: vi.fn(),
     loginRedirect: vi.fn(),
     logoutRedirect: vi.fn(),
     acquireTokenSilent: vi.fn(),
-    acquireTokenRedirect: vi.fn(),
+    acquireTokenPopup: vi.fn(),
   }
 })
 
 vi.mock('@azure/msal-browser', () => ({
+  BrowserAuthError: mocks.MockBrowserAuthError,
+  BrowserAuthErrorCodes: { timedOut: 'timed_out' },
+  CacheLookupPolicy: { AccessTokenAndRefreshToken: 'access-token-and-refresh-token' },
   InteractionRequiredAuthError: mocks.MockInteractionRequiredAuthError,
   PublicClientApplication: vi.fn(function PublicClientApplication(configuration: unknown) {
     mocks.configuration = configuration
@@ -74,7 +87,7 @@ describe('AuthProvider redirect flow', () => {
     mocks.getAllAccounts.mockReturnValue([])
     mocks.loginRedirect.mockResolvedValue(undefined)
     mocks.logoutRedirect.mockResolvedValue(undefined)
-    mocks.acquireTokenRedirect.mockResolvedValue(undefined)
+    mocks.acquireTokenPopup.mockResolvedValue({ accessToken: 'refreshed-token' })
 
     ;({ AuthProvider } = await import('./AuthProvider'))
     ;({ useAuth } = await import('./authContext'))
@@ -90,7 +103,7 @@ describe('AuthProvider redirect flow', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Sign in' }))
 
     expect(mocks.loginRedirect).toHaveBeenCalledWith({
-      scopes: ['api://client-id/.default'],
+      scopes: ['api://client-id/BankServicing.Access'],
     })
     expect(mocks.configuration).toMatchObject({
       cache: {
@@ -99,7 +112,7 @@ describe('AuthProvider redirect flow', () => {
     })
   })
 
-  it('uses redirects for sign-out and interactive token renewal', async () => {
+  it('uses a popup for interactive token renewal without leaving the chat', async () => {
     const account = { homeAccountId: 'home-id', username: 'presenter@example.com' }
     mocks.handleRedirectPromise.mockResolvedValue({ account })
     mocks.acquireTokenSilent.mockRejectedValue(new mocks.MockInteractionRequiredAuthError())
@@ -111,13 +124,38 @@ describe('AuthProvider redirect flow', () => {
     )
 
     await userEvent.click(await screen.findByRole('button', { name: 'Get token' }))
-    await waitFor(() => expect(mocks.acquireTokenRedirect).toHaveBeenCalled())
-    expect(await screen.findByText('Redirecting to refresh your sign-in.')).toBeInTheDocument()
+    await waitFor(() => expect(mocks.acquireTokenPopup).toHaveBeenCalledWith({
+      scopes: ['api://client-id/BankServicing.Access'],
+      account,
+      loginHint: 'presenter@example.com',
+    }))
+    expect(mocks.acquireTokenSilent).toHaveBeenCalledWith({
+      scopes: ['api://client-id/BankServicing.Access'],
+      account,
+      loginHint: 'presenter@example.com',
+      cacheLookupPolicy: 'access-token-and-refresh-token',
+    })
 
     await userEvent.click(screen.getByRole('button', { name: 'Sign out' }))
     expect(mocks.logoutRedirect).toHaveBeenCalledWith({
       account,
       postLogoutRedirectUri: window.location.origin,
     })
+  })
+
+  it('recovers from the observed MSAL timeout with an interactive token request', async () => {
+    const account = { homeAccountId: 'home-id', username: 'presenter@example.com' }
+    mocks.handleRedirectPromise.mockResolvedValue({ account })
+    mocks.acquireTokenSilent.mockRejectedValue(new mocks.MockBrowserAuthError('timed_out'))
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    )
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Get token' }))
+
+    await waitFor(() => expect(mocks.acquireTokenPopup).toHaveBeenCalledTimes(1))
   })
 })

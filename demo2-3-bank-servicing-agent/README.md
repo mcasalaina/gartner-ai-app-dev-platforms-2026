@@ -10,7 +10,7 @@ system-controlled modes:
   and investment servicing, PDF-grounded RAG, bank guardrails, salary DLP, and
   quality/cost reporting.
 - **Avatar marketing:** read-only, multilingual service explanations through the
-  standard Amara photo avatar and Ava multilingual voice, with safe navigation
+  standard Amara photo avatar and Alloy multilingual voice, with safe navigation
   between the two existing banking workspaces.
 
 The web shell is public, but every API and voice session requires Microsoft
@@ -44,11 +44,11 @@ relays avatar WebRTC signaling without exposing the OBO token.
   `https://4iq-foundry-project-resource.services.ai.azure.com/api/projects/4iq-foundry-project`
 - Production model: `gpt-5.4-mini`
 - Avatar: standard Amara photo avatar on `vasa-1`
-- Voice: `en-US-AvaMultilingualNeural`
+- Voice: `en-US-AlloyTurboMultilingualNeural`
 - Avatar region: East US 2
 - Active hosted-agent version: `34`
-- Live frontend image: `bank-servicing-frontend:20260807.1`
-- Live backend image: `bank-servicing-backend:20260807.1`
+- Live frontend image: `bank-servicing-frontend:20260807.5`
+- Live backend image: `bank-servicing-backend:20260807.3`
 - Live Agent 365 bridge image: `marcos-teller-bridge-a365:20260805.8`
 - Live Agent 365 bridge revision: `marcos-teller-bridge-a365--0000019`
 

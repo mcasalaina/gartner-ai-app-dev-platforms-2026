@@ -87,7 +87,7 @@ param voiceLiveEndpoint string = 'https://4iq-foundry-project-resource.services.
 param voiceLiveVoiceType string = 'azure-standard'
 
 @description('Voice Live multilingual voice name.')
-param voiceLiveVoice string = 'en-US-AvaMultilingualNeural'
+param voiceLiveVoice string = 'en-US-AlloyTurboMultilingualNeural'
 
 @description('Enable synchronized avatar output.')
 param voiceLiveAvatarEnabled bool = true

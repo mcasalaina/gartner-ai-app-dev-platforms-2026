@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   createVoiceSession: vi.fn(),
   getAccessToken: vi.fn(),
   sendMessage: vi.fn(),
+  voiceSetMuted: vi.fn(),
   voiceCallbacks: null as {
     onState: (state: string) => void
     onTranscript: (role: 'user' | 'assistant', text: string) => void
@@ -46,6 +47,7 @@ vi.mock('./voice', () => ({
 
     connect = vi.fn().mockResolvedValue(undefined)
     close = vi.fn()
+    setMuted = mocks.voiceSetMuted
   },
 }))
 
@@ -74,8 +76,33 @@ describe('Bank Servicing Agent shell', () => {
 
     expect(screen.getByRole('button', { name: 'Talk with Avatar' })).toBeInTheDocument()
     expect(screen.getByLabelText('Avatar tone')).toHaveValue('professional')
-    expect(screen.getByText('Amara is ready')).toBeInTheDocument()
-    expect(screen.getByText('Ava Multilingual')).toBeInTheDocument()
+    expect(screen.getByText('Meet Amara')).toBeInTheDocument()
+    expect(screen.getByText('Alloy Multilingual')).toBeInTheDocument()
+  })
+
+  it('mutes and restores the microphone without ending the avatar session', async () => {
+    mocks.account = { name: 'Marco', username: 'marco@example.com' }
+    mocks.getAccessToken.mockResolvedValue('access-token')
+    mocks.createVoiceSession.mockResolvedValue({
+      handle: 'opaque-handle',
+      websocketUrl: 'wss://bank.example/api/voice/live',
+      expiresAt: '2026-08-04T20:02:00Z',
+    })
+
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Talk with Avatar' }))
+    await vi.waitFor(() => expect(mocks.voiceCallbacks).not.toBeNull())
+    act(() => {
+      mocks.voiceCallbacks?.onState('listening')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mute microphone' }))
+    expect(mocks.voiceSetMuted).toHaveBeenCalledWith(true)
+    expect(screen.getByRole('button', { name: 'Unmute microphone' })).toHaveAttribute('aria-pressed', 'true')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Unmute microphone' }))
+    expect(mocks.voiceSetMuted).toHaveBeenLastCalledWith(false)
+    expect(screen.getByRole('button', { name: 'Mute microphone' })).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('applies the selected tone and navigates only from finalized user speech', async () => {
@@ -166,6 +193,7 @@ describe('Bank Servicing Agent shell', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /try this question/i }))
 
+    await screen.findByText('Working')
     const sourceList = screen.getByLabelText(/iq source activity/i)
     expect(sourceList).toHaveTextContent('Working')
     expect(screen.getAllByText('Checking…')).toHaveLength(3)

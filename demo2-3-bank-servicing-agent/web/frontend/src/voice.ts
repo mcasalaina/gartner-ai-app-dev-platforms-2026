@@ -34,6 +34,7 @@ export class VoiceCall {
   private peer: RTCPeerConnection | null = null
   private avatarStream: MediaStream | null = null
   private nextPlaybackAt = 0
+  private muted = false
 
   constructor(callbacks: VoiceCallbacks) {
     this.callbacks = callbacks
@@ -84,6 +85,13 @@ export class VoiceCall {
     this.callbacks.onState('ended')
   }
 
+  setMuted(muted: boolean): void {
+    this.muted = muted
+    for (const track of this.stream?.getAudioTracks() ?? []) {
+      track.enabled = !muted
+    }
+  }
+
   private async handleControlMessage(data: string): Promise<void> {
     try {
       const message = JSON.parse(data) as VoiceControlMessage
@@ -132,7 +140,7 @@ export class VoiceCall {
 
     const offer = await peer.createOffer()
     await peer.setLocalDescription(offer)
-    await waitForIceGathering(peer)
+    await waitForUsableIceCandidates(peer)
     if (!peer.localDescription) throw new Error('The avatar offer could not be created.')
     this.socket?.send(JSON.stringify({
       type: 'avatar_connect',
@@ -154,11 +162,12 @@ export class VoiceCall {
         noiseSuppression: true,
       },
     })
+    this.setMuted(this.muted)
     this.inputContext = new AudioContext()
     const source = this.inputContext.createMediaStreamSource(this.stream)
     this.processor = this.inputContext.createScriptProcessor(4096, 1, 1)
     this.processor.onaudioprocess = (event) => {
-      if (this.socket?.readyState !== WebSocket.OPEN) return
+      if (this.muted || this.socket?.readyState !== WebSocket.OPEN) return
       const samples = event.inputBuffer.getChannelData(0)
       const ratio = this.inputContext!.sampleRate / 16000
       const outputLength = Math.floor(samples.length / ratio)
@@ -212,22 +221,48 @@ export class VoiceCall {
     this.inputContext = null
     this.outputContext = null
     this.nextPlaybackAt = 0
+    this.muted = false
   }
 }
 
-async function waitForIceGathering(peer: RTCPeerConnection): Promise<void> {
+async function waitForUsableIceCandidates(peer: RTCPeerConnection): Promise<void> {
   if (peer.iceGatheringState === 'complete') return
   await new Promise<void>((resolve, reject) => {
+    let hasCandidate = peer.localDescription?.sdp?.includes('a=candidate:') ?? false
+    let settleTimer: number | null = null
     const timeout = window.setTimeout(() => {
-      peer.removeEventListener('icegatheringstatechange', onStateChange)
-      reject(new Error('The avatar media connection timed out.'))
-    }, 10_000)
-    const onStateChange = () => {
-      if (peer.iceGatheringState !== 'complete') return
+      cleanup()
+      if (hasCandidate) {
+        resolve()
+      } else {
+        reject(new Error('The avatar media connection could not find a network route.'))
+      }
+    }, 8_000)
+    const cleanup = () => {
       window.clearTimeout(timeout)
+      if (settleTimer !== null) window.clearTimeout(settleTimer)
       peer.removeEventListener('icegatheringstatechange', onStateChange)
+      peer.removeEventListener('icecandidate', onCandidate)
+    }
+    const finish = () => {
+      cleanup()
       resolve()
     }
+    const onStateChange = () => {
+      if (peer.iceGatheringState !== 'complete') return
+      finish()
+    }
+    const onCandidate = (event: RTCPeerConnectionIceEvent) => {
+      if (!event.candidate) {
+        finish()
+        return
+      }
+      hasCandidate = true
+      if (event.candidate.type !== 'relay') return
+      if (settleTimer !== null) window.clearTimeout(settleTimer)
+      settleTimer = window.setTimeout(finish, 250)
+    }
     peer.addEventListener('icegatheringstatechange', onStateChange)
+    peer.addEventListener('icecandidate', onCandidate)
   })
 }

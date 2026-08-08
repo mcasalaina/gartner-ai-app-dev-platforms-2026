@@ -43,7 +43,7 @@ services:
             - name: VOICE_LIVE_PROJECT_NAME
               value: 4iq-foundry-project
             - name: VOICE_LIVE_VOICE
-              value: en-US-AvaMultilingualNeural
+              value: en-US-AlloyTurboMultilingualNeural
             - name: VOICE_LIVE_VOICE_TYPE
               value: azure-standard
             - name: VOICE_LIVE_AVATAR_ENABLED

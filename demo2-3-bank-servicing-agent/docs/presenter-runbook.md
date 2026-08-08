@@ -12,7 +12,7 @@ Microsoft Foundry hosted agent. Use synthetic identities and records only.
    `BankServicing.ContentReviewer` for review and `BankServicing.Admin` for the
    model comparison lab.
 4. Confirm Voice Live is in East US 2 and configured with the standard Amara
-   photo avatar, `vasa-1`, `en-US-AvaMultilingualNeural`, multilingual semantic
+   photo avatar, `vasa-1`, `en-US-AlloyTurboMultilingualNeural`, multilingual semantic
    VAD, and WebRTC output.
 5. In the presentation browser, allow microphone access and confirm Amara video,
    synchronized audio, and live transcripts. Custom photo-avatar and personal
@@ -69,7 +69,7 @@ presenter tab clears that state.
 1. Select **Explore services**, set the tone to **Professional**, and start
    **Talk with Avatar**. Show Amara moving from Connecting to Listening.
 2. Ask in English: “Compare checking and savings services and explain the main
-   benefit of each.” Point out the synchronized video, Ava multilingual voice,
+   benefit of each.” Point out the synchronized video, Alloy multilingual voice,
    live transcript, and grounded banking answer.
 3. Set the tone to **Warm** and ask in Spanish: “Quiero abrir una cuenta. ¿Cómo
    verifico mi identidad?” Show the same avatar answering in Spanish and the

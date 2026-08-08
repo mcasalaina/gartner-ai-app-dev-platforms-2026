@@ -127,7 +127,10 @@ class AppSettings:
             project_name=os.getenv("VOICE_LIVE_PROJECT_NAME", "4iq-foundry-project"),
             agent_name=os.getenv("VOICE_LIVE_AGENT_NAME", "bank-servicing-agent"),
             voice_type=os.getenv("VOICE_LIVE_VOICE_TYPE", "azure-standard"),
-            voice_name=os.getenv("VOICE_LIVE_VOICE", "en-US-AvaMultilingualNeural"),
+            voice_name=os.getenv(
+                "VOICE_LIVE_VOICE",
+                "en-US-AlloyTurboMultilingualNeural",
+            ),
             avatar_enabled=_boolean_env("VOICE_LIVE_AVATAR_ENABLED", default=True),
             avatar_character=os.getenv("VOICE_LIVE_AVATAR_CHARACTER", "amara"),
             avatar_model=os.getenv("VOICE_LIVE_AVATAR_MODEL", "vasa-1"),

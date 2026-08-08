@@ -78,7 +78,7 @@ def test_voice_live_url_targets_new_hosted_agent_contract() -> None:
         project_name="4iq-foundry-project",
         agent_name="bank-servicing-agent",
         voice_type="azure-standard",
-        voice_name="en-US-AvaMultilingualNeural",
+        voice_name="en-US-AlloyTurboMultilingualNeural",
         avatar_enabled=True,
         avatar_character="amara",
         avatar_model="vasa-1",
@@ -111,7 +111,7 @@ async def test_voice_live_session_configures_standard_photo_avatar() -> None:
         project_name="4iq-foundry-project",
         agent_name="bank-servicing-agent",
         voice_type="azure-standard",
-        voice_name="en-US-AvaMultilingualNeural",
+        voice_name="en-US-AlloyTurboMultilingualNeural",
         avatar_enabled=True,
         avatar_character="amara",
         avatar_model="vasa-1",
@@ -138,7 +138,7 @@ async def test_voice_live_session_configures_standard_photo_avatar() -> None:
 
     assert "instructions" not in session
     assert session["voice"] == {
-        "name": "en-US-AvaMultilingualNeural",
+        "name": "en-US-AlloyTurboMultilingualNeural",
         "type": "azure-standard",
     }
     assert session["input_audio_transcription"] == {"model": "azure-speech"}

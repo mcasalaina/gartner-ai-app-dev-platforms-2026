@@ -63,6 +63,7 @@ describe('VoiceCall', () => {
       value: {
         getUserMedia: vi.fn().mockResolvedValue({
           getTracks: () => [],
+          getAudioTracks: () => [],
         } as unknown as MediaStream),
       },
     })
@@ -92,7 +93,7 @@ describe('VoiceCall', () => {
       getChannelData: () => new Float32Array(2),
     }))
     const start = vi.fn()
-    const inputTrack = { id: 'mic', kind: 'audio', stop: vi.fn() }
+    const inputTrack = { id: 'mic', kind: 'audio', enabled: true, stop: vi.fn() }
     const avatarAudio = { id: 'avatar-audio', kind: 'audio', stop: vi.fn() }
     const avatarVideo = { id: 'avatar-video', kind: 'video', stop: vi.fn() }
 
@@ -169,9 +170,10 @@ describe('VoiceCall', () => {
     }
 
     class FakePeerConnection {
+      listeners = new Map<string, Set<(event: Event | RTCPeerConnectionIceEvent) => void>>()
       configuration: RTCConfiguration
       localDescription: RTCSessionDescriptionInit | null = null
-      iceGatheringState: RTCIceGatheringState = 'complete'
+      iceGatheringState: RTCIceGatheringState = 'gathering'
       connectionState: RTCPeerConnectionState = 'new'
       ontrack: ((event: RTCTrackEvent) => void) | null = null
       onconnectionstatechange: (() => void) | null = null
@@ -190,10 +192,23 @@ describe('VoiceCall', () => {
 
       async setLocalDescription(description: RTCSessionDescriptionInit) {
         this.localDescription = description
+        window.setTimeout(() => {
+          const candidate = { type: 'relay' } as RTCIceCandidate
+          for (const listener of this.listeners.get('icecandidate') ?? []) {
+            listener({ candidate } as RTCPeerConnectionIceEvent)
+          }
+        }, 0)
       }
 
-      addEventListener() {}
-      removeEventListener() {}
+      addEventListener(type: string, listener: (event: Event | RTCPeerConnectionIceEvent) => void) {
+        const listeners = this.listeners.get(type) ?? new Set()
+        listeners.add(listener)
+        this.listeners.set(type, listeners)
+      }
+
+      removeEventListener(type: string, listener: (event: Event | RTCPeerConnectionIceEvent) => void) {
+        this.listeners.get(type)?.delete(listener)
+      }
     }
     const peerInstances: FakePeerConnection[] = []
 
@@ -206,6 +221,7 @@ describe('VoiceCall', () => {
       value: {
         getUserMedia: vi.fn().mockResolvedValue({
           getTracks: () => [inputTrack],
+          getAudioTracks: () => [inputTrack],
         } as unknown as MediaStream),
       },
     })
@@ -219,6 +235,10 @@ describe('VoiceCall', () => {
     })
 
     await call.connect('wss://bank.example/api/voice/live', 'opaque-handle')
+    call.setMuted(true)
+    expect(inputTrack.enabled).toBe(false)
+    call.setMuted(false)
+    expect(inputTrack.enabled).toBe(true)
     const socket = socketInstances[0]
     socket.onmessage?.({
       data: JSON.stringify({

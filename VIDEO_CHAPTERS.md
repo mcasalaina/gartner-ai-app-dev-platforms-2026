@@ -1,0 +1,46 @@
+# Gartner AI App Development Platforms 2026 - Microsoft Video Submission
+## Chapters
+- `00:00` Introduction and platform overview
+- `01:30` Deep research agent scenario
+- `01:50` Microsoft 365 Copilot Cowork
+- `02:57` Researcher in Microsoft 365 Copilot
+- `03:37` Copilot Studio
+- `05:31` Microsoft Foundry and the model catalog
+- `06:39` GitHub Copilot app
+- `07:49` GitHub Copilot Plan and Autopilot modes
+- `08:23` Building the deep research agent with GPT, Flux, and Azure Speech
+- `11:03` Web IQ
+- `12:36` Grounded AI assistant scenario
+- `14:56` Foundry prompt agents and hosted agents
+- `15:38` Foundry Model Router
+- `16:57` Hosted-agent deployment and micro-VM architecture
+- `18:17` Foundry IQ
+- `20:06` Fabric IQ
+- `21:37` Fabric ontologies
+- `22:43` Fabric Data Agent and context delegation
+- `25:41` Azure Machine Learning
+- `26:54` Work IQ
+- `29:07` Customer-facing agent scenario
+- `30:08` Agent identity, permissions, and security context
+- `32:15` Microsoft 365 Frontier Autopilots
+- `32:36` Agent 365
+- `33:55` Foundry observability, tracing, and monitoring
+- `35:21` Application cost management
+- `36:36` Automated evaluation, human evaluation, and fine-tuning
+- `38:10` Automated red teaming
+- `39:01` Foundry guardrails and content safety
+- `42:39` Photorealistic avatar and digital human scenario
+- `42:54` Voice Live API
+- `43:14` Personal Voice
+- `44:18` Photo Avatar
+- `45:10` Voice-enabled bank servicing avatar
+- `46:33` Regional deployment and data residency
+- `47:08` Inference consumption and capacity options
+- `47:33` Token caching
+- `47:53` Foundry Local
+- `48:49` Rubric-based evaluation
+- `50:22` ASSERT Framework
+- `51:05` Agent Optimizer
+- `51:41` Foundry AI Services
+
+Total runtime: `53:20`.

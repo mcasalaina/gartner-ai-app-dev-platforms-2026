@@ -4,73 +4,73 @@
       "type": "prompt",
       "test_case_id": "test_case_000001",
       "offset": 0,
-      "length": 2238
+      "length": 2222
     },
     "prompt:test_case_000002": {
       "type": "prompt",
       "test_case_id": "test_case_000002",
-      "offset": 2238,
-      "length": 2230
+      "offset": 2222,
+      "length": 2212
     },
     "prompt:test_case_000003": {
       "type": "prompt",
       "test_case_id": "test_case_000003",
-      "offset": 4468,
-      "length": 1916
+      "offset": 4434,
+      "length": 1892
     },
     "prompt:test_case_000004": {
       "type": "prompt",
       "test_case_id": "test_case_000004",
-      "offset": 6384,
-      "length": 1127
+      "offset": 6326,
+      "length": 1101
     },
     "prompt:test_case_000005": {
       "type": "prompt",
       "test_case_id": "test_case_000005",
-      "offset": 7511,
-      "length": 1164
+      "offset": 7427,
+      "length": 1142
     },
     "prompt:test_case_000006": {
       "type": "prompt",
       "test_case_id": "test_case_000006",
-      "offset": 8675,
-      "length": 1193
+      "offset": 8569,
+      "length": 1177
     },
     "prompt:test_case_000007": {
       "type": "prompt",
       "test_case_id": "test_case_000007",
-      "offset": 9868,
-      "length": 1551
+      "offset": 9746,
+      "length": 1546
     },
     "prompt:test_case_000008": {
       "type": "prompt",
       "test_case_id": "test_case_000008",
-      "offset": 11419,
-      "length": 1534
+      "offset": 11292,
+      "length": 1511
     },
     "scenario:test_case_000009": {
       "type": "scenario",
       "test_case_id": "test_case_000009",
-      "offset": 12953,
-      "length": 39117
+      "offset": 12803,
+      "length": 38624
     },
     "scenario:test_case_000010": {
       "type": "scenario",
       "test_case_id": "test_case_000010",
-      "offset": 52070,
-      "length": 37019
+      "offset": 51427,
+      "length": 36528
     },
     "scenario:test_case_000011": {
       "type": "scenario",
       "test_case_id": "test_case_000011",
-      "offset": 89089,
-      "length": 37000
+      "offset": 87955,
+      "length": 36497
     },
     "scenario:test_case_000012": {
       "type": "scenario",
       "test_case_id": "test_case_000012",
-      "offset": 126089,
-      "length": 38321
+      "offset": 124452,
+      "length": 37816
     }
   }
 }

@@ -72,6 +72,20 @@ It binds to `http://127.0.0.1:5174`, reads the ignored
 `evaluation/assert/artifacts/results/` directory, and starts in read-only mode.
 Do not commit raw transcripts or traces.
 
+Legacy runs can be upgraded once without rerunning inference or judging. The
+migration preserves the original transcript and score files under
+`.legacy-viewer-schema/`; rebuild the standard viewer's derived read model
+afterward:
+
+```bash
+RUN_DIR=demo2-3-bank-servicing-agent/evaluation/assert/artifacts/results/bank-servicing-conversations/20260805T054917Z
+python3 demo2-3-bank-servicing-agent/evaluation/assert/scripts/migrate_legacy_viewer_artifacts.py "$RUN_DIR"
+PYTHONPATH=demo2-3-bank-servicing-agent/evaluation/assert/.runtime/source \
+  demo2-3-bank-servicing-agent/evaluation/assert/.venv/bin/python -c \
+  'import sys; from pathlib import Path; from assert_ai.viewer_read_model import build_run_viewer_artifacts; build_run_viewer_artifacts(Path(sys.argv[1]))' \
+  "$RUN_DIR"
+```
+
 ## Controlled execution artifacts
 
 - `automation/assert-job.bicep` defines a manually triggered Container Apps Job

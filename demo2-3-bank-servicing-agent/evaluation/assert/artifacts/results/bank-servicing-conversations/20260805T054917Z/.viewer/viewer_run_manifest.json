@@ -6,45 +6,50 @@
   "source_files": {
     "inference_set.jsonl": {
       "path": "inference_set.jsonl",
-      "size_bytes": 164410,
-      "mtime_ms": 1785909740493
+      "size_bytes": 162268,
+      "mtime_ms": 1786341129168
     },
     "scores.jsonl": {
       "path": "scores.jsonl",
-      "size_bytes": 119727,
-      "mtime_ms": 1785910353407
+      "size_bytes": 120492,
+      "mtime_ms": 1786341129167
+    },
+    "test_set.jsonl": {
+      "path": "../test_set.jsonl",
+      "size_bytes": 8400,
+      "mtime_ms": 1786341129175
     },
     "manifest.json": {
       "path": "manifest.json",
-      "size_bytes": 665,
-      "mtime_ms": 1785909837177
+      "size_bytes": 779,
+      "mtime_ms": 1786338975673
     },
     "config.yaml": {
       "path": "config.yaml",
       "size_bytes": 5238,
-      "mtime_ms": 1785880568000
+      "mtime_ms": 1786338975672
     }
   },
   "derived_files": {
     "viewer_prompt_rows.json": {
       "path": ".viewer/viewer_prompt_rows.json",
-      "size_bytes": 26745,
-      "mtime_ms": 1785910356256
+      "size_bytes": 28116,
+      "mtime_ms": 1786341233664
     },
     "viewer_audit_rows.json": {
       "path": ".viewer/viewer_audit_rows.json",
-      "size_bytes": 16728,
-      "mtime_ms": 1785910357097
+      "size_bytes": 17571,
+      "mtime_ms": 1786341233665
     },
     "viewer_transcript_index.json": {
       "path": ".viewer/viewer_transcript_index.json",
       "size_bytes": 1830,
-      "mtime_ms": 1785910354805
+      "mtime_ms": 1786341233654
     },
     "viewer_score_index.json": {
       "path": ".viewer/viewer_score_index.json",
       "size_bytes": 1836,
-      "mtime_ms": 1785910357901
+      "mtime_ms": 1786341233666
     }
   }
 }

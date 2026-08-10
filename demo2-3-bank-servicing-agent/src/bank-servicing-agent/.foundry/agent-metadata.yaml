@@ -265,3 +265,14 @@ environments:
         observedSourcesLine: null
         resultFile: .foundry/results/multi-source-intro/20260805T044300Z/result.json
         summaryFile: .foundry/results/multi-source-intro/20260805T044300Z/summary.md
+    lastClassicEval:
+      agentVersion: '33'
+      completedAt: '2026-08-08T00:01:57.348731+00:00'
+      status: completed
+      resultDirectory: results/dev/classic-comprehensive-20260807T235839Z
+      runs:
+        standard-comprehensive:
+          evalId: eval_bf3aa327c98a429a820d09750be60bc3
+          evalRunId: evalrun_f98b52fbaab54defb6a53989419afe0f
+          status: completed
+          reportUrl: https://ai.azure.com/nextgen/r/J7ATmha0Qr-eycbbN2gkXg,rg-aycabas-3iqs,,4iq-foundry-project-resource,4iq-foundry-project/build/evaluations/eval_bf3aa327c98a429a820d09750be60bc3/run/evalrun_f98b52fbaab54defb6a53989419afe0f

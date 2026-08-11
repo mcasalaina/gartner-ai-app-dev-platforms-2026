@@ -7,6 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from bank_servicing_agent.credentials import managed_identity_environment
+from bank_servicing_agent.modes import DemoMode
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,6 +32,7 @@ class Settings:
     log_level: str
     agent_name: str
     agent_version: str | None
+    trusted_default_demo_mode: DemoMode | None
     agent365_work_iq: Agent365WorkIQSettings | None
 
     @classmethod
@@ -63,6 +65,9 @@ class Settings:
             log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
             agent_name=os.getenv("FOUNDRY_AGENT_NAME", "bank-servicing-agent"),
             agent_version=os.getenv("FOUNDRY_AGENT_VERSION") or None,
+            trusted_default_demo_mode=_optional_demo_mode(
+                "TRUSTED_DEFAULT_DEMO_MODE"
+            ),
             agent365_work_iq=agent365_work_iq,
         )
 
@@ -89,6 +94,19 @@ def _resolve_model_deployment_name(project_endpoint: str) -> str:
     if not project_endpoint:
         raise RuntimeError("FOUNDRY_PROJECT_ENDPOINT must be set before model resolution")
     return "gpt-5.4-mini"
+
+
+def _optional_demo_mode(name: str) -> DemoMode | None:
+    value = os.getenv(name, "").strip().lower()
+    if not value:
+        return None
+    try:
+        return DemoMode(value)
+    except ValueError as exc:
+        supported = ", ".join(mode.value for mode in DemoMode)
+        raise RuntimeError(
+            f"Unsupported {name} value '{value}'. Expected one of: {supported}"
+        ) from exc
 
 
 def _optional_agent365_work_iq_settings() -> Agent365WorkIQSettings | None:

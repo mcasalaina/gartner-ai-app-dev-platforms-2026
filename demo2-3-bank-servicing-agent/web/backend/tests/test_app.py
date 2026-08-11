@@ -190,5 +190,6 @@ def test_app_config_describes_standard_avatar(client) -> None:
         "enabled": True,
         "character": "amara",
         "model": "vasa-1",
+        "rotationXDegrees": 10.0,
     }
     assert "avatar_marketing" in response.json()["allowedDemoModes"]

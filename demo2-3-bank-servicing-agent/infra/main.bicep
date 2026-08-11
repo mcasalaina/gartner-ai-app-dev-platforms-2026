@@ -101,6 +101,11 @@ param voiceLiveAvatarModel string = 'vasa-1'
 @description('Whether the configured photo avatar is custom.')
 param voiceLiveAvatarCustomized bool = false
 
+@description('Avatar pitch in degrees. Positive values tilt the avatar downward.')
+@minValue(-180)
+@maxValue(180)
+param voiceLiveAvatarRotationXDegrees int = 10
+
 @description('Enable Voice Live interim responses during tool calls and response latency.')
 param voiceLiveInterimResponseEnabled bool = true
 
@@ -566,6 +571,10 @@ resource backend 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'VOICE_LIVE_AVATAR_CUSTOMIZED'
               value: string(voiceLiveAvatarCustomized)
+            }
+            {
+              name: 'VOICE_LIVE_AVATAR_ROTATION_X_DEGREES'
+              value: string(voiceLiveAvatarRotationXDegrees)
             }
             {
               name: 'VOICE_LIVE_INTERIM_RESPONSE_ENABLED'

@@ -105,6 +105,29 @@ describe('Bank Servicing Agent shell', () => {
     expect(screen.getByRole('button', { name: 'Mute microphone' })).toHaveAttribute('aria-pressed', 'false')
   })
 
+  it('shows playback recovery only while avatar media is blocked', async () => {
+    mocks.account = { name: 'Marco', username: 'marco@example.com' }
+    mocks.getAccessToken.mockResolvedValue('access-token')
+    mocks.createVoiceSession.mockResolvedValue({
+      handle: 'opaque-handle',
+      websocketUrl: 'wss://bank.example/api/voice/live',
+      expiresAt: '2026-08-04T20:02:00Z',
+    })
+    vi.spyOn(HTMLMediaElement.prototype, 'play')
+      .mockRejectedValueOnce(new DOMException('Autoplay blocked', 'NotAllowedError'))
+
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Talk with Avatar' }))
+    await vi.waitFor(() => expect(mocks.voiceCallbacks).not.toBeNull())
+    act(() => {
+      mocks.voiceCallbacks?.onAvatarStream({} as MediaStream)
+    })
+
+    expect(await screen.findByRole('button', { name: 'Play avatar' })).toBeInTheDocument()
+    fireEvent.playing(screen.getByLabelText('Talking banking avatar'))
+    expect(screen.queryByRole('button', { name: 'Play avatar' })).not.toBeInTheDocument()
+  })
+
   it('applies the selected tone and navigates only from finalized user speech', async () => {
     mocks.account = { name: 'Marco', username: 'marco@example.com' }
     mocks.getAccessToken.mockResolvedValue('access-token')

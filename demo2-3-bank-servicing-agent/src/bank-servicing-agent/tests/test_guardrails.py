@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from bank_servicing_agent.dlp import evaluate_salary_dlp, evaluate_salary_output_dlp
 from bank_servicing_agent.modes import DemoMode
+from bank_servicing_agent.models import ConversationTurn
 from bank_servicing_agent.prompt_injection import detect_prompt_injection_markers, has_high_severity_marker
 from bank_servicing_agent.request_guard import evaluate_bank_domain_request
 
@@ -64,6 +65,48 @@ def test_request_guard_rejects_unrelated_request_after_union_expansion() -> None
 
     assert decision.allowed is False
     assert decision.code == "out_of_domain"
+
+
+def test_request_guard_accepts_conversational_follow_up_in_banking_context() -> None:
+    history = (
+        ConversationTurn(
+            role="user",
+            text="Does Maria Garcia have any recent ATM fees?",
+        ),
+        ConversationTurn(
+            role="assistant",
+            text="One moment while I pull that together.",
+        ),
+    )
+
+    for text in (
+        "Can you still hear me?",
+        "Are you still there?",
+        "Okay, but what are you doing then?",
+    ):
+        decision = evaluate_bank_domain_request(
+            DemoMode.AVATAR_MARKETING,
+            text,
+            history,
+        )
+        assert decision.allowed is True
+        assert decision.code == "contextual_follow_up"
+
+
+def test_request_guard_does_not_inherit_context_for_unrelated_work() -> None:
+    history = (ConversationTurn(role="user", text="Tell me about checking account fees."),)
+    for text in (
+        "Write a haiku about the moon.",
+        "Okay, now write a haiku about the moon.",
+        "Can you still hear me? Now write a haiku about the moon.",
+    ):
+        decision = evaluate_bank_domain_request(
+            DemoMode.AVATAR_MARKETING,
+            text,
+            history,
+        )
+        assert decision.allowed is False
+        assert decision.code == "out_of_domain"
 
 
 def test_avatar_marketing_accepts_service_and_servicing_guidance() -> None:

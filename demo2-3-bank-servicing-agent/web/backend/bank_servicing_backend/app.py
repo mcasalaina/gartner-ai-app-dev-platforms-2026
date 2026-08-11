@@ -241,6 +241,7 @@ def create_app(
                     "enabled": current.voice.avatar_enabled,
                     "character": current.voice.avatar_character,
                     "model": current.voice.avatar_model,
+                    "rotationXDegrees": current.voice.avatar_rotation_x_degrees,
                 },
                 "handlePath": "/api/voice/handles",
                 "websocketPath": "/api/voice/live",

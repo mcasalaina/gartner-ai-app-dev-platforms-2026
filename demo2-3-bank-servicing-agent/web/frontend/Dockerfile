@@ -16,6 +16,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+RUN test -n "$VITE_ENTRA_CLIENT_ID" \
+    && test -n "$VITE_ENTRA_TENANT_ID" \
+    && test -n "$VITE_API_SCOPE" \
+    && test -n "$VITE_API_BASE_URL"
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.29-alpine
@@ -24,4 +28,3 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
-

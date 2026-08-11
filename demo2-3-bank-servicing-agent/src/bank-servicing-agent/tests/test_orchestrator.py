@@ -34,14 +34,10 @@ class FakeBackend:
         return GenerationResult(text=self._responses.pop(0))
 
 
-def test_avatar_tone_and_spanish_format_are_applied_by_the_agent() -> None:
+def test_avatar_tone_and_spoken_format_are_applied_by_the_agent() -> None:
     response_text = (
-        "## Resumen del servicio\n"
-        "Puedo explicar el proceso de una cuenta. [P1]\n\n"
-        "## Evidencia\n"
-        "La política describe la verificación de identidad. [P1]\n\n"
-        "## Próximo paso recomendado\n"
-        "Revisa los documentos requeridos. [P1]"
+        "Puedo explicarte cómo verificar tu identidad sin enviar una solicitud. "
+        "Normalmente necesitarás una identificación oficial y tus datos personales."
     )
     backend = FakeBackend([response_text, response_text])
     orchestrator = BankServicingOrchestrator(
@@ -61,7 +57,88 @@ def test_avatar_tone_and_spanish_format_are_applied_by_the_agent() -> None:
 
     system_instructions = str(backend.calls[0]["system_instructions"])
     assert "warm, reassuring delivery" in system_instructions
-    assert "## Resumen del servicio" in system_instructions
+    assert "no more than 60 words" in system_instructions
+    assert "citation markers" in system_instructions
+
+
+def test_avatar_rejects_unobserved_citations_before_stripping_them() -> None:
+    backend = FakeBackend(
+        [
+            "Your account fees are always waived. [p1]",
+            "Your account fees are always waived. [p1]",
+        ]
+    )
+    orchestrator = BankServicingOrchestrator(
+        instructions=InstructionBundle(version="1.4.2", body="Base instructions."),
+        backend=backend,
+    )
+
+    response = asyncio.run(
+        orchestrator.handle(
+            BankServicingRequest(
+                mode=DemoMode.AVATAR_MARKETING,
+                user_text="Are my checking account fees always waived?",
+            )
+        )
+    )
+
+    assert response.blocked is True
+    assert response.metadata["decision"] == "quality_reject"
+    assert "unobserved_source_citation" in response.metadata["issues"]
+    assert len(backend.calls) == 2
+
+
+def test_avatar_rejects_ungrounded_factual_answer() -> None:
+    backend = FakeBackend(
+        [
+            "Your account fees are always waived.",
+            "Your account fees are always waived.",
+        ]
+    )
+    orchestrator = BankServicingOrchestrator(
+        instructions=InstructionBundle(version="1.4.2", body="Base instructions."),
+        backend=backend,
+    )
+
+    response = asyncio.run(
+        orchestrator.handle(
+            BankServicingRequest(
+                mode=DemoMode.AVATAR_MARKETING,
+                user_text="Are my checking account fees always waived?",
+            )
+        )
+    )
+
+    assert response.blocked is True
+    assert "missing_grounding" in response.metadata["issues"]
+    assert backend.calls[1]["use_tools"] is True
+
+
+def test_avatar_allows_ungrounded_conversational_follow_up() -> None:
+    backend = FakeBackend(["Yes, I can still hear you."])
+    orchestrator = BankServicingOrchestrator(
+        instructions=InstructionBundle(version="1.4.2", body="Base instructions."),
+        backend=backend,
+    )
+
+    response = asyncio.run(
+        orchestrator.handle(
+            BankServicingRequest(
+                mode=DemoMode.AVATAR_MARKETING,
+                user_text="Can you still hear me?",
+                history=(
+                    ConversationTurn(
+                        role="user",
+                        text="Tell me about checking account fees.",
+                    ),
+                ),
+            )
+        )
+    )
+
+    assert response.blocked is False
+    assert response.text == "Yes, I can still hear you."
+    assert len(backend.calls) == 1
 
 
 def test_orchestrator_repairs_once_for_missing_citation() -> None:

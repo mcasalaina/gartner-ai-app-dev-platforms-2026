@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 from bank_servicing_agent.dlp import evaluate_salary_output_dlp
 from bank_servicing_agent.kyc_state import SyntheticKycState, find_confirmation_safety_issues
-from bank_servicing_agent.language import avatar_section_headings
 from bank_servicing_agent.modes import DemoMode
 
 
@@ -34,16 +33,12 @@ _REQUIRED_HEADINGS = {
         "## Safety Checks",
         "## Recommended Next Step",
     ),
-    DemoMode.AVATAR_MARKETING: (
-        "## Service Summary",
-        "## Evidence",
-        "## Recommended Next Step",
-    ),
+    DemoMode.AVATAR_MARKETING: (),
 }
 _WORD_LIMITS = {
     DemoMode.SERVICE_DISCOVERY: 220,
     DemoMode.CUSTOMER_SERVICING: 260,
-    DemoMode.AVATAR_MARKETING: 180,
+    DemoMode.AVATAR_MARKETING: 60,
 }
 _CITATION_PATTERN = re.compile(r"\[[A-Z][A-Z0-9:-]*\]")
 _INTERNAL_CONTEXT_PATTERN = re.compile(r"\b(?:demo|synthetic)\b", re.IGNORECASE)
@@ -65,11 +60,7 @@ def evaluate_response_quality(
                 detail=f"Response exceeded {_WORD_LIMITS[mode]} words.",
             )
         )
-    required_headings = (
-        avatar_section_headings(user_text)
-        if mode is DemoMode.AVATAR_MARKETING
-        else _REQUIRED_HEADINGS[mode]
-    )
+    required_headings = _REQUIRED_HEADINGS[mode]
     for heading in required_headings:
         if heading not in response_text:
             issues.append(
@@ -78,7 +69,10 @@ def evaluate_response_quality(
                     detail=f"Missing required section heading: {heading}",
                 )
             )
-    if not _CITATION_PATTERN.search(response_text):
+    if (
+        mode is not DemoMode.AVATAR_MARKETING
+        and not _CITATION_PATTERN.search(response_text)
+    ):
         issues.append(
             QualityIssue(
                 code="missing_citation",

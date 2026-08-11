@@ -142,7 +142,12 @@ async def test_voice_live_session_configures_standard_photo_avatar() -> None:
         "type": "azure-standard",
     }
     assert session["input_audio_transcription"] == {"model": "azure-speech"}
-    assert session["turn_detection"] == {"type": "azure_semantic_vad_multilingual"}
+    assert session["turn_detection"] == {
+        "type": "azure_semantic_vad_multilingual",
+        "create_response": True,
+        "interrupt_response": False,
+        "auto_truncate": False,
+    }
     assert session["interim_response"] == {
         "type": "static_interim_response",
         "triggers": ["tool", "latency"],
@@ -160,6 +165,7 @@ async def test_voice_live_session_configures_standard_photo_avatar() -> None:
         "customized": False,
         "output_protocol": "webrtc",
         "output_audit_audio": False,
+        "scene": {"rotation_x": 0.17453292519943295},
         "video": {
             "codec": "h264",
             "resolution": {"width": 1920, "height": 1080},

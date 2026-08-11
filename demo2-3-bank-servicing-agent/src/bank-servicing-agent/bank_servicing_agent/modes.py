@@ -21,14 +21,22 @@ class DemoModeError(ValueError):
 
 
 
-def resolve_demo_mode(client_headers: Mapping[str, str] | None) -> DemoMode:
+def resolve_demo_mode(
+    client_headers: Mapping[str, str] | None,
+    *,
+    trusted_default: DemoMode | None = None,
+) -> DemoMode:
     if not client_headers:
+        if trusted_default is not None:
+            return trusted_default
         raise DemoModeError(
             "Missing required trusted operating mode. Supported values are "
             "service_discovery, customer_servicing, and avatar_marketing."
         )
     value = client_headers.get("x-client-demo-mode")
     if value is None or not value.strip():
+        if trusted_default is not None:
+            return trusted_default
         raise DemoModeError(
             "Missing required trusted operating mode. Supported values are "
             "service_discovery, customer_servicing, and avatar_marketing."

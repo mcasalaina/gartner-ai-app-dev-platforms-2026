@@ -23,16 +23,13 @@ def test_quality_accepts_cited_service_discovery_response() -> None:
     assert assessment.passed is True
 
 
-def test_quality_accepts_cited_spanish_avatar_response() -> None:
+def test_quality_accepts_terse_uncited_spanish_avatar_response() -> None:
     assessment = evaluate_response_quality(
         DemoMode.AVATAR_MARKETING,
         "Quiero abrir una cuenta. ¿Cómo verifico mi identidad?",
-        "## Resumen del servicio\n"
-        "Puedo explicar el proceso de una cuenta sin enviar una solicitud. [P1]\n\n"
-        "## Evidencia\n"
-        "La política describe los pasos de verificación de identidad. [P1]\n\n"
-        "## Próximo paso recomendado\n"
-        "Revisa los documentos requeridos antes de continuar. [P1]",
+        "Puedo explicarte cómo verificar tu identidad sin enviar una solicitud. "
+        "Normalmente necesitarás una identificación oficial y tus datos personales. "
+        "¿Quieres que repasemos los documentos requeridos?",
         SyntheticKycState(True, False, False),
     )
 

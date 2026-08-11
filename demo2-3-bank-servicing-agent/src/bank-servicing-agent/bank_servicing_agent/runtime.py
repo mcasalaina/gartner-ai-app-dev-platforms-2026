@@ -21,15 +21,27 @@ from bank_servicing_agent.history import extract_conversation_turns, split_lates
 from bank_servicing_agent.instructions_loader import load_runtime_instructions
 from bank_servicing_agent.logging_utils import configure_logging
 from bank_servicing_agent.models import BankServicingRequest
-from bank_servicing_agent.modes import DemoModeError, resolve_avatar_tone, resolve_demo_mode
+from bank_servicing_agent.modes import (
+    DemoMode,
+    DemoModeError,
+    resolve_avatar_tone,
+    resolve_demo_mode,
+)
 from bank_servicing_agent.orchestrator import BankServicingOrchestrator
 
 
 class BankServicingResponseHost(ResponsesAgentServerHost):
-    def __init__(self, orchestrator: BankServicingOrchestrator, logger) -> None:
+    def __init__(
+        self,
+        orchestrator: BankServicingOrchestrator,
+        logger,
+        *,
+        trusted_default_demo_mode: DemoMode | None = None,
+    ) -> None:
         super().__init__(options=ResponsesServerOptions(default_fetch_history_count=12))
         self._orchestrator = orchestrator
         self._logger = logger
+        self._trusted_default_demo_mode = trusted_default_demo_mode
         self.response_handler(self._handle_response)
 
     async def _handle_response(
@@ -40,7 +52,10 @@ class BankServicingResponseHost(ResponsesAgentServerHost):
     ) -> TextResponse:
         del cancellation_signal
         try:
-            mode = resolve_demo_mode(context.client_headers)
+            mode = resolve_demo_mode(
+                context.client_headers,
+                trusted_default=self._trusted_default_demo_mode,
+            )
             avatar_tone = resolve_avatar_tone(context.client_headers, mode)
         except DemoModeError as exc:
             self._logger.info(
@@ -103,7 +118,11 @@ def build_app() -> BankServicingResponseHost:
             else None
         ),
     )
-    return BankServicingResponseHost(orchestrator, logger)
+    return BankServicingResponseHost(
+        orchestrator,
+        logger,
+        trusted_default_demo_mode=settings.trusted_default_demo_mode,
+    )
 
 
 

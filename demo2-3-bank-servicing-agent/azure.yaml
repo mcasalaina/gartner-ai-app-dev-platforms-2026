@@ -34,6 +34,8 @@ services:
               value: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
             - name: AGENT_INSTRUCTIONS_PATH
               value: instructions.md
+            - name: TRUSTED_DEFAULT_DEMO_MODE
+              value: avatar_marketing
             - name: VOICE_LIVE_ENDPOINT
               value: https://4iq-foundry-project-resource.services.ai.azure.com
             - name: VOICE_LIVE_API_VERSION

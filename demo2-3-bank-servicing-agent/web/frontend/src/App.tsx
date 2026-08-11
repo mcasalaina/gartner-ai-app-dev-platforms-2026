@@ -385,6 +385,7 @@ function ConversationWorkspace({
                 autoPlay
                 playsInline
                 aria-label="Talking banking avatar"
+                onPlaying={() => setMediaBlocked(false)}
               />
               {!hasAvatarStream && (
                 <div className="avatar-placeholder">
@@ -402,7 +403,7 @@ function ConversationWorkspace({
               <div className="avatar-call-actions">
                 {mediaBlocked && (
                   <button className="button" type="button" onClick={resumeAvatarMedia}>
-                    Start media
+                    Play avatar
                   </button>
                 )}
                 {voiceState === 'failed' ? (

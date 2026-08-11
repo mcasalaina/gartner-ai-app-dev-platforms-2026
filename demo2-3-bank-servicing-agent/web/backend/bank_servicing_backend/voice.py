@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import math
 import secrets
 import time
 import uuid
@@ -135,7 +136,12 @@ class VoiceLiveClient:
             "input_audio_transcription": {
                 "model": "azure-speech",
             },
-            "turn_detection": {"type": "azure_semantic_vad_multilingual"},
+            "turn_detection": {
+                "type": "azure_semantic_vad_multilingual",
+                "create_response": True,
+                "interrupt_response": False,
+                "auto_truncate": False,
+            },
             "input_audio_echo_cancellation": {
                 "type": "server_echo_cancellation"
             },
@@ -164,6 +170,11 @@ class VoiceLiveClient:
                 "customized": self._settings.avatar_customized,
                 "output_protocol": "webrtc",
                 "output_audit_audio": False,
+                "scene": {
+                    "rotation_x": math.radians(
+                        self._settings.avatar_rotation_x_degrees
+                    )
+                },
                 "video": {
                     "codec": "h264",
                     "resolution": {"width": 1920, "height": 1080},

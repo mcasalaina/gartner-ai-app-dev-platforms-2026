@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
+from collections.abc import Sequence
 
 from bank_servicing_agent.modes import DemoMode
+from bank_servicing_agent.models import ConversationTurn
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,15 +100,31 @@ _CROSS_USER_PATTERN = re.compile(
     r"\bcuenta\s+de\s+otra\s+persona\b",
     re.IGNORECASE,
 )
+_CONVERSATIONAL_FOLLOW_UP_PATTERN = re.compile(
+    r"\s*(?:(?:okay|ok)\s*,?\s*(?:but\s+)?)?"
+    r"(?:can you (?:still )?hear me|are you (?:still )?there|"
+    r"what are you doing(?: then)?|what(?:'s| is) happening|"
+    r"are you (?:still )?working|keep going|go on|continue|wait|hold on|"
+    r"stop|cancel|repeat|say that again|why|how so|okay|ok|yes|no|"
+    r"me oyes|sigues ahí|qué estás haciendo|qué pasa|continúa|espera|"
+    r"detente|cancela|repite|por qué|sí|no)\s*[?.!]*\s*",
+    re.IGNORECASE,
+)
 
 
 
-def evaluate_bank_domain_request(mode: DemoMode, text: str) -> GuardDecision:
+def evaluate_bank_domain_request(
+    mode: DemoMode,
+    text: str,
+    history: Sequence[ConversationTurn] = (),
+) -> GuardDecision:
     tokens = set(re.findall(r"\w+", text.casefold(), re.UNICODE))
     tokens.update(
         token[:-1] for token in tuple(tokens) if token.endswith("s") and len(token) > 3
     )
     if not tokens & _BANK_DOMAIN_TERMS:
+        if _CONVERSATIONAL_FOLLOW_UP_PATTERN.fullmatch(text) and _has_bank_context(history):
+            return GuardDecision(allowed=True, code="contextual_follow_up", message="")
         return GuardDecision(
             allowed=False,
             code="out_of_domain",
@@ -149,6 +167,19 @@ def evaluate_bank_domain_request(mode: DemoMode, text: str) -> GuardDecision:
             message="Please ask about banking services or customer guidance.",
         )
     return GuardDecision(allowed=True, code="allowed", message="")
+
+
+def _has_bank_context(history: Sequence[ConversationTurn]) -> bool:
+    for turn in reversed(history[-8:]):
+        if turn.role.casefold() != "user":
+            continue
+        tokens = set(re.findall(r"\w+", turn.text.casefold(), re.UNICODE))
+        tokens.update(
+            token[:-1] for token in tuple(tokens) if token.endswith("s") and len(token) > 3
+        )
+        if tokens & _BANK_DOMAIN_TERMS:
+            return True
+    return False
 
 
 def evaluate_cross_user_request(text: str) -> GuardDecision:

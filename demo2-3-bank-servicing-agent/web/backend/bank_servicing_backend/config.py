@@ -59,6 +59,7 @@ class VoiceSettings:
     handle_ttl_seconds: int
     interim_response_enabled: bool = True
     interim_response_latency_threshold_ms: int = 800
+    avatar_rotation_x_degrees: float = 10.0
 
     @property
     def websocket_url(self) -> str:
@@ -145,6 +146,9 @@ class AppSettings:
             interim_response_latency_threshold_ms=int(
                 os.getenv("VOICE_LIVE_INTERIM_RESPONSE_LATENCY_MS", "800")
             ),
+            avatar_rotation_x_degrees=float(
+                os.getenv("VOICE_LIVE_AVATAR_ROTATION_X_DEGREES", "10")
+            ),
         )
         _validate_url(foundry.project_endpoint, require_path=True)
         _validate_url(voice.endpoint)
@@ -155,6 +159,10 @@ class AppSettings:
         if voice.interim_response_latency_threshold_ms < 0:
             raise ConfigurationError(
                 "VOICE_LIVE_INTERIM_RESPONSE_LATENCY_MS must be zero or greater"
+            )
+        if not -180 <= voice.avatar_rotation_x_degrees <= 180:
+            raise ConfigurationError(
+                "VOICE_LIVE_AVATAR_ROTATION_X_DEGREES must be between -180 and 180"
             )
         return cls(
             environment=environment,

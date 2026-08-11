@@ -24,6 +24,25 @@ def test_resolve_demo_mode_rejects_unknown_value() -> None:
         resolve_demo_mode({"x-client-demo-mode": "admin"})
 
 
+def test_resolve_demo_mode_uses_trusted_default_only_when_header_is_missing() -> None:
+    assert (
+        resolve_demo_mode(None, trusted_default=DemoMode.AVATAR_MARKETING)
+        is DemoMode.AVATAR_MARKETING
+    )
+    assert (
+        resolve_demo_mode(
+            {"x-client-demo-mode": "customer_servicing"},
+            trusted_default=DemoMode.AVATAR_MARKETING,
+        )
+        is DemoMode.CUSTOMER_SERVICING
+    )
+    with pytest.raises(DemoModeError):
+        resolve_demo_mode(
+            {"x-client-demo-mode": "admin"},
+            trusted_default=DemoMode.AVATAR_MARKETING,
+        )
+
+
 def test_avatar_tone_is_trusted_and_defaults_to_professional() -> None:
     assert resolve_avatar_tone(
         {"x-client-avatar-tone": "warm"},

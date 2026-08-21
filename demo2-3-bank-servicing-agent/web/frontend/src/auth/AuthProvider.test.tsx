@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useState, type ComponentType, type ReactNode } from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { StrictMode, useState, type ComponentType, type ReactNode } from 'react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   class MockInteractionRequiredAuthError extends Error {}
@@ -31,7 +31,10 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('@azure/msal-browser', () => ({
   BrowserAuthError: mocks.MockBrowserAuthError,
-  BrowserAuthErrorCodes: { timedOut: 'timed_out' },
+  BrowserAuthErrorCodes: {
+    noTokenRequestCacheError: 'no_token_request_cache_error',
+    timedOut: 'timed_out',
+  },
   CacheLookupPolicy: { AccessTokenAndRefreshToken: 'access-token-and-refresh-token' },
   InteractionRequiredAuthError: mocks.MockInteractionRequiredAuthError,
   PublicClientApplication: vi.fn(function PublicClientApplication(configuration: unknown) {
@@ -76,6 +79,8 @@ function Consumer() {
 }
 
 describe('AuthProvider redirect flow', () => {
+  afterEach(cleanup)
+
   beforeEach(async () => {
     vi.resetModules()
     vi.clearAllMocks()
@@ -110,6 +115,42 @@ describe('AuthProvider redirect flow', () => {
         cacheLocation: 'sessionStorage',
       },
     })
+  })
+
+  it('processes the redirect only once when Strict Mode remounts effects', async () => {
+    const account = { homeAccountId: 'home-id', username: 'presenter@example.com' }
+    mocks.handleRedirectPromise.mockResolvedValue({ account })
+
+    render(
+      <StrictMode>
+        <AuthProvider>
+          <Consumer />
+        </AuthProvider>
+      </StrictMode>,
+    )
+
+    expect(await screen.findByRole('button', { name: 'Get token' })).toBeInTheDocument()
+    expect(mocks.initialize).toHaveBeenCalledTimes(1)
+    expect(mocks.handleRedirectPromise).toHaveBeenCalledTimes(1)
+    expect(mocks.setActiveAccount).toHaveBeenCalledOnce()
+    expect(mocks.setActiveAccount).toHaveBeenCalledWith(account)
+  })
+
+  it('recovers from a stale redirect response whose request cache was already consumed', async () => {
+    window.history.pushState(null, '', '/#code=stale')
+    mocks.handleRedirectPromise.mockRejectedValue(
+      new mocks.MockBrowserAuthError('no_token_request_cache_error'),
+    )
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    )
+
+    expect(await screen.findByRole('button', { name: 'Sign in' })).toBeInTheDocument()
+    expect(window.location.hash).toBe('')
+    expect(mocks.setActiveAccount).toHaveBeenCalledWith(null)
   })
 
   it('uses a popup for interactive token renewal without leaving the chat', async () => {

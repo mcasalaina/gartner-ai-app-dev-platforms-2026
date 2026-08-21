@@ -47,7 +47,7 @@ relays avatar WebRTC signaling without exposing the OBO token.
 - Voice: `en-US-AlloyTurboMultilingualNeural`
 - Avatar region: East US 2
 - Active hosted-agent version: `42`
-- Live frontend image: `bank-servicing-frontend:20260808.5`
+- Live frontend image: `bank-servicing-frontend:20260821.3`
 - Live backend image: `bank-servicing-backend:20260808.6`
 - Live Agent 365 bridge image: `marcos-teller-bridge-a365:20260805.8`
 - Live Agent 365 bridge revision: `marcos-teller-bridge-a365--0000019`

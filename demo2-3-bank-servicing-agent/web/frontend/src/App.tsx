@@ -133,7 +133,7 @@ function Header() {
           <div className="brand-mark" aria-hidden="true">BS</div>
           <div>
             <p className="brand-name">Bank Servicing Agent</p>
-            <p className="brand-subtitle">Microsoft Foundry · Gartner Demos 2 through 4</p>
+            <p className="brand-subtitle">Microsoft Foundry</p>
           </div>
         </div>
         <div className="topbar-actions">

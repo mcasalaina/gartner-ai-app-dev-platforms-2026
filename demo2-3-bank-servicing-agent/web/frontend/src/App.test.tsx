@@ -64,6 +64,8 @@ describe('Bank Servicing Agent shell', () => {
 
   it('requires sign-in before showing agent controls', () => {
     render(<App />)
+    expect(screen.getByText('Microsoft Foundry')).toBeInTheDocument()
+    expect(screen.queryByText(/gartner/i)).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /banking answers with evidence/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in to continue/i })).toBeInTheDocument()
     expect(screen.queryByLabelText(/workspace mode/i)).not.toBeInTheDocument()

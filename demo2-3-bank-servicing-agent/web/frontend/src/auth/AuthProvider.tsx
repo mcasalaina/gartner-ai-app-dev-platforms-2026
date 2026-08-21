@@ -38,6 +38,32 @@ const msal = new PublicClientApplication({
   },
 })
 
+let initializationPromise: Promise<AccountInfo | null> | null = null
+
+function initializeAuthentication(): Promise<AccountInfo | null> {
+  if (!initializationPromise) {
+    initializationPromise = (async () => {
+      await msal.initialize()
+      let redirectResult: AuthenticationResult | null = null
+      try {
+        redirectResult = await msal.handleRedirectPromise()
+      } catch (reason) {
+        const staleRedirect = reason instanceof BrowserAuthError
+          && reason.errorCode === BrowserAuthErrorCodes.noTokenRequestCacheError
+        if (!staleRedirect) {
+          throw reason
+        }
+        window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+      }
+      const selected = redirectResult?.account ?? msal.getAllAccounts()[0] ?? null
+      msal.setActiveAccount(selected)
+      return selected
+    })()
+  }
+
+  return initializationPromise
+}
+
 function rolesFor(account: AccountInfo | null): string[] {
   const claims = account?.idTokenClaims as { roles?: string[] } | undefined
   return claims?.roles ?? []
@@ -53,11 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true
     void (async () => {
       try {
-        await msal.initialize()
-        const redirectResult = await msal.handleRedirectPromise()
-        const selected = redirectResult?.account ?? msal.getAllAccounts()[0] ?? null
+        const selected = await initializeAuthentication()
         if (active) {
-          msal.setActiveAccount(selected)
           setAccount(selected)
         }
       } catch (reason) {
